@@ -27,8 +27,11 @@ if [ "$1" = "pages" ]; then
   rm -rf build-pages
   mkdir build-pages
   cp 404.html style.css favicon.svg apple-touch-icon.png og-image.png build-pages/
+  # Like the Java server, add the stylesheet's fingerprint to its link, so phones fetch the new
+  # styles after every publish instead of reusing a saved copy.
+  version="$(shasum style.css | cut -c1-8)"
   awk '{ print } /<meta charset="UTF-8">/ { print "    <meta name=\"robots\" content=\"noindex\">" }' \
-    index.html > build-pages/index.html
+    index.html | sed "s|href=\"style.css\"|href=\"style.css?v=$version\"|" > build-pages/index.html
   touch build-pages/.nojekyll
   # The gh-pages branch holds only the latest copy, so it's replaced each time.
   origin="$(git remote get-url origin)"
