@@ -12,6 +12,10 @@
   --muted-on-ink: #a3adb9;
   --accent: #f5b301;
   --accent-hover: #ffc629;
+  /* The "electric" colours the lights use: amber, a hotter orange and a near-white spark. */
+  --volt: #f5b301;
+  --volt-hot: #ff7a18;
+  --volt-spark: #fff1b8;
   --card: #fff;
   --card-line: var(--paper-2);
   --show-moon: block;
@@ -159,7 +163,7 @@ a {
   padding: 14px 24px;
   border-radius: 10px;
   border: 2px solid var(--accent);
-  transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+  transition: background-color 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.2s;
 }
 
 .button:hover {
@@ -191,7 +195,10 @@ a {
   position: sticky;
   top: 0;
   z-index: 50;
-  background-color: rgba(17, 22, 29, 0.94);
+  /* See-through with a blur behind it: the "frosted glass" look, same as the portfolio. */
+  background-color: rgba(17, 22, 29, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--ink-line);
   color: var(--text-on-ink);
 }
@@ -446,8 +453,9 @@ a {
 }
 
 .service-card {
-  background-color: var(--card);
-  border: 1px solid var(--card-line);
+  /* Its colour and glowing edge are layers behind the content (see "Lights"). */
+  --fill: var(--card);
+  --edge: var(--card-line);
   border-radius: var(--radius);
   padding: clamp(24px, 4vw, 36px);
   box-shadow: 0 1px 2px rgba(17, 22, 29, 0.04), 0 8px 24px rgba(17, 22, 29, 0.06);
@@ -516,8 +524,8 @@ a {
 }
 
 .remodel-card {
-  background-color: var(--ink-2);
-  border: 1px solid var(--ink-line);
+  --fill: var(--ink-2);
+  --edge: var(--ink-line);
   border-radius: var(--radius);
   padding: clamp(24px, 4vw, 36px);
 }
@@ -698,16 +706,11 @@ a {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background-color: var(--ink-2);
-  border: 1px solid var(--ink-line);
+  --fill: var(--ink-2);
+  --edge: var(--ink-line);
   border-radius: var(--radius);
   padding: 20px 22px;
   text-decoration: none;
-  transition: border-color 0.15s;
-}
-
-a.contact-card:hover {
-  border-color: var(--accent);
 }
 
 .contact-label {
@@ -778,4 +781,362 @@ a.contact-card:hover {
 
 .footer-inner p {
   margin: 0;
+}
+
+/* ---------- Centred layout ----------
+   Phones come first, so the page body is centred top to bottom: headings, text, buttons,
+   cards and the footer. The header is left alone. The FAQ answers stay left-aligned,
+   since paragraphs are easier to read that way. */
+
+main,
+.site-footer {
+  text-align: center;
+}
+
+/* Things with a max width sit in the middle instead of hugging the left. */
+main h1,
+main h2,
+main .lead,
+.area-inner p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-actions,
+.hero-points,
+.area-list,
+.footer-inner {
+  justify-content: center;
+}
+
+.service-icon {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* The checklist's square bullet sits just before each item, so centred items still have one. */
+.checklist li {
+  padding-left: 0;
+}
+
+.checklist li::before {
+  position: static;
+  display: inline-block;
+  vertical-align: 0.05em;
+  margin-right: 10px;
+}
+
+.contact-card {
+  align-items: center;
+}
+
+.faq-list {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.faq {
+  text-align: left;
+}
+
+/* ---------- Lights ----------
+   The glowing, shimmering bits, borrowed from the portfolio and recoloured in E&E's amber.
+   It's all CSS, with no script. They run on their own, so phones (no hover) see them too;
+   hovering with a mouse turns them up.
+
+   Safety rule: nothing here flashes more than twice a second (WCAG's limit is 3), so the
+   lights glide, pulse and fade instead of strobing. The reduced-motion block at the end
+   switches all of it off for people who've asked for less motion. */
+
+/* Lets the card edges' light spin. Browsers that don't know @property just show it still. */
+@property --spin {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ----- Hero: a slow amber glow drifts behind the headline ----- */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(245, 179, 1, 0.18), transparent 40%),
+    radial-gradient(circle at 75% 65%, rgba(255, 122, 24, 0.14), transparent 45%);
+  animation: drift 14s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: translate(-6%, -4%) scale(1); }
+  to   { transform: translate(6%, 4%) scale(1.15); }
+}
+
+/* "one call" and the remodels headline's accent: electric colours flowing through the words.
+   The gradient is twice as wide as the text and slides along it; the first colour repeats at
+   the end so the loop has no jump. */
+.accent {
+  background: linear-gradient(90deg,
+    var(--volt), var(--volt-hot), var(--volt-spark),
+    var(--volt-hot), var(--volt)) 0 0 / 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 0% 0; }
+  to   { background-position: 200% 0; }
+}
+
+/* ----- The lightning-bolt logo hums ----- */
+.brand-mark {
+  animation: hum 3s ease-in-out infinite;
+}
+
+@keyframes hum {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(245, 179, 1, 0.35)); }
+  50%      { filter: drop-shadow(0 0 10px rgba(245, 179, 1, 0.8)); }
+}
+
+/* ----- Buttons: a glint of light sweeps across, and they glow on hover ----- */
+.button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.button:not(.button-ghost)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%)
+    0 0 / 250% 100% no-repeat;
+  animation: glint 4.5s ease-in-out infinite;
+}
+
+@keyframes glint {
+  0%, 60% { background-position: 150% 0; }
+  100%    { background-position: -100% 0; }
+}
+
+.button:hover {
+  box-shadow: 0 0 28px rgba(245, 179, 1, 0.45);
+}
+
+.button-ghost:hover {
+  border-color: var(--volt);
+  box-shadow: 0 0 24px rgba(245, 179, 1, 0.25);
+}
+
+/* ----- Cards: a thin edge with amber light running round it -----
+   The card's own background is its edge colour. ::after is the card's colour laid on top,
+   1px smaller all round, so only a thin edge shows. ::before is a band of light spinning
+   behind that edge. It's always on, softly; hovering brightens it and lifts the card. */
+.service-card,
+.remodel-card,
+.contact-card {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--edge);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card::before,
+.remodel-card::before,
+.contact-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(from var(--spin),
+    transparent 0deg, var(--volt) 40deg, var(--volt-spark) 60deg, var(--volt-hot) 80deg,
+    transparent 120deg, transparent 360deg);
+  opacity: 0.55;
+  animation: spin 7s linear infinite;
+  transition: opacity 0.3s ease;
+}
+
+.service-card::after,
+.remodel-card::after,
+.contact-card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: calc(var(--radius) - 1px);
+  background-color: var(--fill);
+}
+
+/* Each card's light starts at a different spot, so they don't all circle in step. */
+.service-columns > :nth-child(2)::before,
+.remodel-grid > :nth-child(2)::before,
+.contact-grid > :nth-child(2)::before { animation-delay: -1.75s; }
+.service-columns > :nth-child(3)::before,
+.remodel-grid > :nth-child(3)::before,
+.contact-grid > :nth-child(3)::before { animation-delay: -3.5s; }
+.service-columns > :nth-child(4)::before,
+.remodel-grid > :nth-child(4)::before,
+.contact-grid > :nth-child(4)::before { animation-delay: -5.25s; }
+
+@keyframes spin {
+  to { --spin: 360deg; }
+}
+
+@media (hover: hover) {
+  .service-card:hover,
+  .remodel-card:hover,
+  a.contact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 40px rgba(245, 179, 1, 0.22);
+  }
+
+  .service-card:hover::before,
+  .remodel-card:hover::before,
+  a.contact-card:hover::before {
+    opacity: 1;
+  }
+}
+
+/* The service icons glow like a lit switch. */
+.service-icon {
+  box-shadow: 0 0 0 1px rgba(245, 179, 1, 0.25), 0 0 18px rgba(245, 179, 1, 0.25);
+}
+
+/* ----- Remodel steps: the numbers pulse one after another, like current moving down a line ----- */
+.step-number {
+  animation: charge 4s ease-in-out infinite;
+}
+
+.steps li:nth-child(2) .step-number { animation-delay: 1s; }
+.steps li:nth-child(3) .step-number { animation-delay: 2s; }
+.steps li:nth-child(4) .step-number { animation-delay: 3s; }
+
+@keyframes charge {
+  0%, 30%, 100% { box-shadow: 0 0 0 0 rgba(245, 179, 1, 0); }
+  12%           { box-shadow: 0 0 0 6px rgba(245, 179, 1, 0.25), 0 0 24px rgba(245, 179, 1, 0.6); }
+}
+
+/* ----- Why E&E: the bar above each reason is a live wire, with light flowing along it ----- */
+.reason {
+  border-top: 0;
+  padding-top: 21px;
+  background: linear-gradient(90deg,
+    var(--volt), var(--volt-hot), var(--volt-spark), var(--volt-hot), var(--volt))
+    0 0 / 200% 3px no-repeat;
+  animation: shimmer 5s linear infinite;
+}
+
+/* ----- Service area: a wave of light runs along the town pills ----- */
+.area-list li {
+  animation: pill-light 3.4s ease-in-out infinite;
+}
+
+.area-list li:nth-child(2) { animation-delay: 0.2s; }
+.area-list li:nth-child(3) { animation-delay: 0.4s; }
+.area-list li:nth-child(4) { animation-delay: 0.6s; }
+.area-list li:nth-child(5) { animation-delay: 0.8s; }
+.area-list li:nth-child(6) { animation-delay: 1s; }
+.area-list li:nth-child(7) { animation-delay: 1.2s; }
+.area-list li:nth-child(8) { animation-delay: 1.4s; }
+.area-list li:nth-child(9) { animation-delay: 1.6s; }
+
+@keyframes pill-light {
+  0%, 30%, 100% {
+    border-color: var(--card-line);
+    box-shadow: none;
+  }
+  12% {
+    border-color: var(--volt);
+    box-shadow: 0 0 14px rgba(245, 179, 1, 0.55);
+  }
+}
+
+/* ----- FAQ: an open answer gets a lit edge ----- */
+.faq {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.faq[open],
+.faq:hover {
+  border-color: var(--volt);
+  box-shadow: 0 0 24px rgba(245, 179, 1, 0.15);
+}
+
+/* ---------- Fade in on scroll ----------
+   Things fade and rise into place as they scroll into view. @supports means "only if the
+   browser understands it", so older browsers just show everything normally. */
+@supports (animation-timeline: view()) {
+  .section h2,
+  .section .lead,
+  .service-card,
+  .remodel-card,
+  .steps li,
+  .reason,
+  .area-list,
+  .faq,
+  .contact-card {
+    animation: fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+
+  /* These already have a light animation; list both so neither cancels the other. */
+  .reason {
+    animation: shimmer 5s linear infinite, fade-up linear both;
+    animation-timeline: auto, view();
+    animation-range: normal, entry 0% entry 40%;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* People who've asked their device for less motion: the lights stay on, but hold still. */
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .accent,
+  .brand-mark,
+  .button::after,
+  .service-card::before,
+  .remodel-card::before,
+  .contact-card::before,
+  .step-number,
+  .reason,
+  .area-list li,
+  .section h2,
+  .section .lead,
+  .service-card,
+  .remodel-card,
+  .steps li,
+  .area-list,
+  .faq,
+  .contact-card {
+    animation: none;
+  }
+
+  .button,
+  .service-card,
+  .remodel-card,
+  .contact-card,
+  .faq {
+    transition: none;
+  }
 }
