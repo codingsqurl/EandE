@@ -1,0 +1,10 @@
+# Mac's hidden folder-settings files
+.DS_Store
+# Local Claude Code tooling, not part of the site
+.claude/
+# Secrets, if you ever add them
+.env
+# Compiled Java classes from ./run.sh
+build/
+build-test/
+build-pages/

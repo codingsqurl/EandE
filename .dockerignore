@@ -1,0 +1,14 @@
+# Keep these out of the build, so they can't end up on the server.
+.git
+.github
+.claude
+.venv
+build
+build-test
+build-pages
+.pages-worktree
+server/test
+.env
+**/__pycache__
+.DS_Store
+art

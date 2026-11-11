@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 1200 630">
+  <!-- Source for og-image.png, the picture shown when someone shares the link.
+       Re-make it with (Quick Look draws an 800px-wide page, hence width="800"):
+         qlmanage -t -s 2400 -o /tmp art/og-image.svg
+         magick /tmp/og-image.svg.png -crop 2400x1260+0+0 +repage -resize 1200x630! -strip og-image.png -->
+  <defs>
+    <radialGradient id="glow" cx="0.88" cy="0" r="0.75">
+      <stop offset="0" stop-color="#f5b301" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#f5b301" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#11161d"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect x="0" y="606" width="1200" height="24" fill="#f5b301"/>
+  <g transform="translate(80 80) scale(3.5)">
+    <rect width="32" height="32" rx="7" fill="#f5b301"/>
+    <path d="M18 4 8 18h7l-2 10 11-15h-7z" fill="#11161d"/>
+  </g>
+  <g font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+    <text x="80" y="290" font-size="76" font-weight="800" fill="#eef1f4">E&amp;E Electrical &amp;</text>
+    <text x="80" y="376" font-size="76" font-weight="800" fill="#eef1f4">Property Maintenance</text>
+    <text x="80" y="456" font-size="34" font-weight="600" fill="#f5b301">Electrical · Maintenance · Trees · Concrete · Remodels</text>
+    <text x="80" y="522" font-size="30" fill="#a3adb9">Colorado Springs &amp; the Pikes Peak region · One call, done right</text>
+  </g>
+</svg>

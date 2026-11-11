@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 32 32">
+  <!-- Source for apple-touch-icon.png, the icon a phone uses when the site is saved to the home screen.
+       Square corners: the phone rounds them itself. Re-make it with:
+         qlmanage -t -s 2400 -o /tmp art/apple-touch-icon.svg
+         magick /tmp/apple-touch-icon.svg.png -resize 180x180! -strip apple-touch-icon.png -->
+  <rect width="32" height="32" fill="#f5b301"/>
+  <path d="M18 4 8 18h7l-2 10 11-15h-7z" fill="#11161d"/>
+</svg>

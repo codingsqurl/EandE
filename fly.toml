@@ -1,0 +1,39 @@
+# Fly.io settings for the E&E site. Deploy with: fly deploy
+# Don't deploy until the client has paid (see CHECKLIST.md).
+
+app = "eande"
+# Denver, the closest region to Colorado Springs.
+primary_region = "den"
+
+# When the client's own domain is set up, list it here or the firewall will turn visitors away:
+# [env]
+#   ALLOWED_HOSTS = "example.com,www.example.com"
+
+[http_service]
+  internal_port = 8080
+  # Send every http:// visit to https://.
+  force_https = true
+  # Stop the machine when nobody's visiting (it costs nothing while stopped),
+  # and start it again on the next visit. That restart takes about a second.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  # Fly holds extra visitors in a queue past this many requests at once, instead of piling
+  # them onto the small machine until it runs out of memory.
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 150
+    hard_limit = 200
+
+  [[http_service.checks]]
+    grace_period = "5s"
+    interval = "30s"
+    method = "GET"
+    path = "/healthz"
+    timeout = "5s"
+
+# The smallest machine Fly offers, which is plenty for this site.
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

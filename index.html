@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<!--
+  The E&E home page. The server (server/src/eande/Server.java) sends this file and
+  fills in the stylesheet's fingerprint. There's no JavaScript on purpose.
+
+  Anything marked PLACEHOLDER is made up and must be swapped for the real thing
+  before launch. The Docker build refuses to run while any are left.
+-->
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>E&amp;E Electrical &amp; Property Maintenance · Colorado Springs</title>
+    <!-- Kept under about 155 characters so Google shows all of it. -->
+    <meta name="description" content="Electrician, property maintenance, tree trimming, concrete and home remodels in Colorado Springs and El Paso County. One call for the whole property.">
+    <link rel="canonical" href="https://eande.fly.dev/">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#11161d">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- What social apps and texts show when someone shares the link.
+         The image's source is art/og-image.svg. -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="E&amp;E Electrical &amp; Property Maintenance">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="E&amp;E Electrical &amp; Property Maintenance">
+    <meta property="og:description" content="Electrical, maintenance, tree work, concrete and remodels across Colorado Springs. One call, done right.">
+    <meta property="og:url" content="https://eande.fly.dev/">
+    <meta property="og:image" content="https://eande.fly.dev/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="E&amp;E Electrical &amp; Property Maintenance, serving Colorado Springs and the Pikes Peak region">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Tells Google this is a local business, so it can show up on Maps and in local results.
+         This is data, not a script, so the "no scripts" rule doesn't block it.
+         Keep it matching what the page says: the services, towns and hours below are the same as the page's. -->
+    <!-- PLACEHOLDER: the email below is made up, and the FAQ answers are drafts (the urgent-calls one is confirmed).
+         The FAQ answers here must match the FAQ section word for word (a test checks). -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": [
+            "Electrician",
+            "HomeAndConstructionBusiness"
+          ],
+          "@id": "https://eande.fly.dev/#business",
+          "name": "E&E Electrical & Property Maintenance",
+          "description": "Electrical, property maintenance, tree trimming, concrete and home remodels across Colorado Springs and the Pikes Peak region.",
+          "url": "https://eande.fly.dev/",
+          "logo": "https://eande.fly.dev/apple-touch-icon.png",
+          "image": "https://eande.fly.dev/og-image.png",
+          "telephone": "+1-720-838-1503",
+          "email": "info@example.com",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Colorado Springs",
+            "addressRegion": "CO",
+            "addressCountry": "US"
+          },
+          "areaServed": [
+            {
+              "@type": "City",
+              "name": "Colorado Springs, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Fountain, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Monument, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Falcon, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Security-Widefield, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Manitou Springs, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Peyton, CO"
+            },
+            {
+              "@type": "AdministrativeArea",
+              "name": "El Paso County, CO"
+            }
+          ],
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "07:00",
+            "closes": "17:00"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Electrical",
+                  "description": "Outlets, lighting, panel upgrades, new circuits, troubleshooting, detectors and EV charger circuits."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Property maintenance",
+                  "description": "Repairs, drywall, doors and locks, rental turnovers and ongoing upkeep for landlords."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Tree trimming & removal",
+                  "description": "Trimming, pruning, full removal, storm cleanup and hauling."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Concrete",
+                  "description": "Driveways, walkways, patios, slabs, steps and concrete repair."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Home remodels",
+                  "description": "Kitchens, bathrooms, basements, flooring and interiors."
+                }
+              }
+            ]
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://eande.fly.dev/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Are you licensed and insured?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. E&E carries a Colorado electrical license and liability insurance, and we're happy to show proof of both before any work starts."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do you give free estimates?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, for jobs in our service area. Text us a photo and a short description and we can often give you a ballpark the same day. Bigger jobs like remodels get an on-site walkthrough and a written estimate."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do you pull permits for electrical work?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. When a job needs a permit, like a panel upgrade or new circuits, we pull it and schedule the inspection, so the work is on record and done to code."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can you come out for urgent problems?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. We take emergency calls, even outside our regular hours (Monday to Friday, 7am to 5pm). For things like a dead circuit, a tree limb on the roof or storm damage, call us and we'll get to you as fast as we can. If you smell burning or see sparks, turn off the breaker and call 911 first."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do you work with landlords and property managers?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. We handle rental turnovers, make-readies and ongoing upkeep, and one call covers electrical, repairs, trees and concrete across all your properties."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What areas do you serve?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Colorado Springs and the rest of El Paso County, including Fountain, Monument, Falcon, Security-Widefield, Manitou Springs and Peyton. If you're nearby and not on the list, just ask."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do you clean up when the job is done?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Always. Drop cloths go down before we start, and debris, branches and old concrete are hauled away when we finish."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="E&amp;E home">
+          <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="7" />
+            <path d="M18 4 8 18h7l-2 10 11-15h-7z" />
+          </svg>
+          <span class="brand-name">E&amp;E <span>Electrical &amp; Maintenance</span></span>
+        </a>
+        <a class="button button-small" href="tel:+17208381503">Call now</a>
+        <!-- Light/dark switch. The page follows the visitor's system setting; ticking this flips it.
+             Pure CSS (style.css looks for :checked with :has), so it resets on reload. -->
+        <label class="theme-toggle" title="Switch light / dark mode">
+          <input type="checkbox" id="theme-toggle" aria-label="Switch light or dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 14.5A9 9 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z" />
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.5" />
+            <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1" />
+          </svg>
+        </label>
+        <!-- Hamburger menu. A built-in popover, so it opens and closes with no JavaScript;
+             tapping outside it or pressing Esc closes it. -->
+        <button class="menu-button" type="button" popovertarget="site-menu" aria-label="Menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18M3 12h18M3 18h18" />
+          </svg>
+        </button>
+        <nav class="site-nav" id="site-menu" popover aria-label="Main">
+          <a href="#services">Services</a>
+          <a href="#remodels">Remodels</a>
+          <a href="#why">Why E&amp;E</a>
+          <a href="#area">Service area</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+
+      <section class="hero">
+        <div class="container hero-inner">
+          <p class="eyebrow">Colorado Springs &amp; the Pikes Peak region</p>
+          <h1>Your whole property, handled with <span class="accent">one call</span>.</h1>
+          <p class="lead">Electrical, maintenance, tree work, concrete and full home remodels.
+            E&amp;E shows up, does the job right and leaves the place clean.</p>
+          <div class="hero-actions">
+            <a class="button" href="tel:+17208381503">Call (720) 838-1503</a>
+            <a class="button button-ghost" href="sms:+17208381503">Text us a photo of the job</a>
+          </div>
+          <ul class="hero-points" aria-label="Highlights">
+            <!-- PLACEHOLDER: confirm each of these is true before launch -->
+            <li>Licensed &amp; insured</li>
+            <li>Upfront pricing</li>
+            <li>Homes, rentals &amp; small businesses</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="services" class="section">
+        <div class="container">
+          <p class="eyebrow">What we do</p>
+          <h2>One crew for the whole property.</h2>
+          <!-- PLACEHOLDER: confirm the service list with the owner -->
+          <div class="service-columns">
+
+            <article class="service-card">
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></svg>
+              </div>
+              <h3>Electrical</h3>
+              <ul class="checklist">
+                <li>Outlets, switches &amp; GFCI protection</li>
+                <li>Lighting, ceiling fans &amp; fixtures</li>
+                <li>Panel upgrades &amp; new circuits</li>
+                <li>Troubleshooting breakers that keep tripping</li>
+                <li>Smoke &amp; CO detectors</li>
+                <li>EV charger &amp; appliance circuits</li>
+              </ul>
+            </article>
+
+            <article class="service-card">
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.7-.7-2.3z" /></svg>
+              </div>
+              <h3>Property maintenance</h3>
+              <ul class="checklist">
+                <li>General repairs &amp; handyman work</li>
+                <li>Drywall patching &amp; touch-up paint</li>
+                <li>Doors, locks, hardware &amp; fixtures</li>
+                <li>Rental turnovers &amp; move-out make-readies</li>
+                <li>Seasonal &amp; preventive maintenance</li>
+                <li>Ongoing upkeep for landlords &amp; property managers</li>
+              </ul>
+            </article>
+
+            <article class="service-card">
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 2 5 11h3l-4 6h7v5h2v-5h7l-4-6h3z" /></svg>
+              </div>
+              <h3>Tree trimming &amp; removal</h3>
+              <ul class="checklist">
+                <li>Trimming &amp; pruning</li>
+                <li>Full tree removal</li>
+                <li>Storm &amp; snow damage cleanup</li>
+                <li>Limbs cleared off roofs &amp; power lines</li>
+                <li>Dead &amp; hazard tree removal</li>
+                <li>Brush &amp; debris hauled away</li>
+              </ul>
+            </article>
+
+            <article class="service-card">
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M2 5h9v5H2zm11 0h9v5h-9zM2 12h5v5H2zm7 0h6v5H9zm8 0h5v5h-5zM2 19h20v2H2z" /></svg>
+              </div>
+              <h3>Concrete</h3>
+              <ul class="checklist">
+                <li>Driveways &amp; walkways</li>
+                <li>Patios &amp; slabs</li>
+                <li>Steps &amp; small retaining walls</li>
+                <li>Cracked &amp; sunken concrete repair</li>
+                <li>Old concrete broken up &amp; removed</li>
+                <li>Shed &amp; hot tub pads</li>
+              </ul>
+            </article>
+
+          </div>
+        </div>
+      </section>
+
+      <section id="remodels" class="section remodels">
+        <div class="container">
+          <p class="eyebrow">Home remodels</p>
+          <h2>Remodels done by the crew that knows the wiring behind the walls.</h2>
+          <p class="lead">Kitchens, bathrooms, basements and everything in between. Because the electrical
+            is done in-house, there's one crew and one schedule from demo day to the final walkthrough.</p>
+
+          <!-- PLACEHOLDER: confirm the remodel types with the owner -->
+          <div class="remodel-grid">
+            <div class="remodel-card">
+              <h3>Kitchens</h3>
+              <p>New layouts, cabinets, counters, backsplash, lighting and the circuits modern appliances need.</p>
+            </div>
+            <div class="remodel-card">
+              <h3>Bathrooms</h3>
+              <p>Tub-to-shower conversions, vanities, tile, fans and GFCI-safe lighting and outlets.</p>
+            </div>
+            <div class="remodel-card">
+              <h3>Basements</h3>
+              <p>Unfinished space turned into a living room, bedroom or office: framing, drywall, electrical and flooring.</p>
+            </div>
+            <div class="remodel-card">
+              <h3>Flooring &amp; interiors</h3>
+              <p>New floors, trim, doors, paint and lighting to bring a dated room up to now.</p>
+            </div>
+          </div>
+
+          <ol class="steps" aria-label="How a remodel works">
+            <li>
+              <span class="step-number" aria-hidden="true">1</span>
+              <h3>Walkthrough</h3>
+              <p>We come out, look at the space and hear what you want.</p>
+            </li>
+            <li>
+              <span class="step-number" aria-hidden="true">2</span>
+              <h3>Written estimate</h3>
+              <p>A clear price and timeline, before any work starts.</p>
+            </li>
+            <li>
+              <span class="step-number" aria-hidden="true">3</span>
+              <h3>Build</h3>
+              <p>One crew handles it all, and you get updates along the way.</p>
+            </li>
+            <li>
+              <span class="step-number" aria-hidden="true">4</span>
+              <h3>Final walkthrough</h3>
+              <p>We go over every detail together and clean up before we leave.</p>
+            </li>
+          </ol>
+
+          <div class="remodel-cta">
+            <a class="button" href="tel:+17208381503">Plan your remodel</a>
+            <a class="button button-ghost" href="#contact">Other ways to reach us</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="why" class="section section-alt">
+        <div class="container">
+          <p class="eyebrow">Why E&amp;E</p>
+          <h2>The kind of contractor you call back.</h2>
+          <div class="reasons">
+            <div class="reason">
+              <h3>One call covers it</h3>
+              <p>Electrical, maintenance, trees, concrete and remodels under one roof, so you're not juggling five contractors for one property.</p>
+            </div>
+            <div class="reason">
+              <h3>Straight answers</h3>
+              <p>You'll know what's wrong, what it costs and how long it takes before any work starts.</p>
+            </div>
+            <div class="reason">
+              <h3>Shows up when promised</h3>
+              <p>We keep the appointment, keep you posted and don't disappear halfway through the job.</p>
+            </div>
+            <div class="reason">
+              <h3>Leaves it clean</h3>
+              <p>Drop cloths down, debris hauled out. The only sign we were there is the finished work.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="area" class="section">
+        <div class="container area-inner">
+          <div>
+            <p class="eyebrow">Service area</p>
+            <h2>Local to the Springs.</h2>
+            <p>Based in Colorado Springs and working throughout El Paso County.
+              Not sure if you're in range? Just ask.</p>
+          </div>
+          <!-- PLACEHOLDER: confirm the towns served -->
+          <ul class="area-list">
+            <li>Colorado Springs</li>
+            <li>Fountain</li>
+            <li>Monument</li>
+            <li>Falcon</li>
+            <li>Security-Widefield</li>
+            <li>Manitou Springs</li>
+            <li>Peyton</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Questions people ask before they call. Each one opens and closes on its own, with no JavaScript.
+           The same questions and answers are in the structured data at the top; keep the two matching. -->
+      <!-- PLACEHOLDER: draft answers. Go through every one with the owner before launch. -->
+      <section id="faq" class="section section-alt">
+        <div class="container">
+          <p class="eyebrow">Questions</p>
+          <h2>Answers before you call.</h2>
+          <div class="faq-list">
+            <details class="faq">
+              <summary>Are you licensed and insured?</summary>
+              <p>Yes. E&amp;E carries a Colorado electrical license and liability insurance, and we're happy to show
+                proof of both before any work starts.</p>
+            </details>
+            <details class="faq">
+              <summary>Do you give free estimates?</summary>
+              <p>Yes, for jobs in our service area. Text us a photo and a short description and we can often give
+                you a ballpark the same day. Bigger jobs like remodels get an on-site walkthrough and a written estimate.</p>
+            </details>
+            <details class="faq">
+              <summary>Do you pull permits for electrical work?</summary>
+              <p>Yes. When a job needs a permit, like a panel upgrade or new circuits, we pull it and schedule the
+                inspection, so the work is on record and done to code.</p>
+            </details>
+            <details class="faq">
+              <summary>Can you come out for urgent problems?</summary>
+              <p>Yes. We take emergency calls, even outside our regular hours (Monday to Friday, 7am to 5pm). For things
+                like a dead circuit, a tree limb on the roof or storm damage, call us and we'll get to you as fast as
+                we can. If you smell burning or see sparks, turn off the breaker and call 911 first.</p>
+            </details>
+            <details class="faq">
+              <summary>Do you work with landlords and property managers?</summary>
+              <p>Yes. We handle rental turnovers, make-readies and ongoing upkeep, and one call covers electrical,
+                repairs, trees and concrete across all your properties.</p>
+            </details>
+            <details class="faq">
+              <summary>What areas do you serve?</summary>
+              <p>Colorado Springs and the rest of El Paso County, including Fountain, Monument, Falcon,
+                Security-Widefield, Manitou Springs and Peyton. If you're nearby and not on the list, just ask.</p>
+            </details>
+            <details class="faq">
+              <summary>Do you clean up when the job is done?</summary>
+              <p>Always. Drop cloths go down before we start, and debris, branches and old concrete are hauled away
+                when we finish.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="section contact">
+        <div class="container">
+          <p class="eyebrow">Get a quote</p>
+          <h2>Tell us what needs fixing.</h2>
+          <p class="lead">Call, text or email. A photo of the problem helps us give you a quick, honest estimate.</p>
+          <!-- PLACEHOLDER: email -->
+          <div class="contact-grid">
+            <a class="contact-card" href="tel:+17208381503">
+              <span class="contact-label">Call</span>
+              <span class="contact-value">(720) 838-1503</span>
+            </a>
+            <a class="contact-card" href="sms:+17208381503">
+              <span class="contact-label">Text</span>
+              <span class="contact-value">(720) 838-1503</span>
+            </a>
+            <a class="contact-card" href="mailto:info@example.com">
+              <span class="contact-label">Email</span>
+              <span class="contact-value">info@example.com</span>
+            </a>
+            <div class="contact-card">
+              <span class="contact-label">Hours</span>
+              <span class="contact-value">Mon–Fri, 7am–5pm</span>
+              <span class="contact-label">Emergency calls anytime</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <nav class="container footer-map" aria-label="Site map">
+        <div>
+          <h2>Services</h2>
+          <ul>
+            <li><a href="#services">Electrical</a></li>
+            <li><a href="#services">Property maintenance</a></li>
+            <li><a href="#services">Tree trimming &amp; removal</a></li>
+            <li><a href="#services">Concrete</a></li>
+            <li><a href="#remodels">Home remodels</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>About</h2>
+          <ul>
+            <li><a href="#why">Why E&amp;E</a></li>
+            <li><a href="#remodels">How a remodel works</a></li>
+            <li><a href="#area">Service area</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Contact</h2>
+          <!-- PLACEHOLDER: email -->
+          <ul>
+            <li><a href="tel:+17208381503">Call (720) 838-1503</a></li>
+            <li><a href="sms:+17208381503">Text a photo</a></li>
+            <li><a href="mailto:info@example.com">info@example.com</a></li>
+            <li><a href="#contact">Get a quote</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="container footer-inner">
+        <p>© 2026 E&amp;E Electrical &amp; Property Maintenance · Colorado Springs, CO</p>
+        <!-- PLACEHOLDER: real license number -->
+        <p>Colorado electrical license #000000</p>
+      </div>
+    </footer>
+  </body>
+</html>
