@@ -107,6 +107,11 @@ a {
   color: inherit;
 }
 
+::selection {
+  background-color: var(--accent);
+  color: var(--ink);
+}
+
 :focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
@@ -132,15 +137,6 @@ a {
 
 .skip-link:focus {
   top: 12px;
-}
-
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  margin-bottom: 0.75em;
 }
 
 .lead {
@@ -379,10 +375,6 @@ a {
   padding: clamp(64px, 12vw, 128px) 0 clamp(56px, 9vw, 96px);
 }
 
-.hero .eyebrow {
-  color: var(--accent);
-}
-
 .hero h1 {
   font-size: clamp(2.25rem, 6vw, 4rem);
   max-width: 18ch;
@@ -461,19 +453,17 @@ a {
   box-shadow: 0 1px 2px rgba(17, 22, 29, 0.04), 0 8px 24px rgba(17, 22, 29, 0.06);
 }
 
-.service-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background-color: var(--ink);
-  display: grid;
-  place-items: center;
-  margin-bottom: 18px;
+/* The icon sits on the heading's line, just before the words. */
+.service-card h3 {
+  font-size: 1.35rem;
+  margin-bottom: 0.8em;
 }
 
-.service-icon svg {
-  width: 24px;
-  height: 24px;
+.service-icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0.4em;
+  vertical-align: -0.18em;
   fill: var(--accent);
 }
 
@@ -508,10 +498,6 @@ a {
   background-image: radial-gradient(ellipse at 10% 100%, rgba(245, 179, 1, 0.12), transparent 55%);
   color: var(--text-on-ink);
   padding: clamp(72px, 12vw, 136px) 0;
-}
-
-.remodels .eyebrow {
-  color: var(--accent);
 }
 
 .remodels h2 {
@@ -694,10 +680,6 @@ a {
   color: var(--text-on-ink);
 }
 
-.contact .eyebrow {
-  color: var(--accent);
-}
-
 .contact .lead {
   color: var(--muted-on-ink);
 }
@@ -807,11 +789,6 @@ main .lead,
 .area-list,
 .footer-inner {
   justify-content: center;
-}
-
-.service-icon {
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* The checklist's square bullet sits just before each item, so centred items still have one. */
@@ -1007,9 +984,9 @@ main .lead,
   }
 }
 
-/* The service icons glow like a lit switch. */
+/* The service icons glow like a lit switch, in time with the logo. */
 .service-icon {
-  box-shadow: 0 0 0 1px rgba(245, 179, 1, 0.25), 0 0 18px rgba(245, 179, 1, 0.25);
+  animation: hum 3s ease-in-out infinite;
 }
 
 /* ----- Remodel steps: the numbers pulse one after another, like current moving down a line ----- */
@@ -1114,6 +1091,7 @@ main .lead,
   .hero::before,
   .accent,
   .brand-mark,
+  .service-icon,
   .button::after,
   .service-card::before,
   .remodel-card::before,
@@ -1138,5 +1116,164 @@ main .lead,
   .contact-card,
   .faq {
     transition: none;
+  }
+}
+
+/* ---------- Phones ----------
+   Most visitors are on a phone, often standing in front of the problem. So: big buttons
+   that fill the width, shorter lists, less scrolling, and Call / Text always in thumb reach. */
+
+/* Only phones get the bottom bar; bigger screens have the header's Call now button in view. */
+.call-bar {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .hero {
+    padding-top: 48px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.25rem, 10.5vw, 3rem);
+  }
+
+  /* The two hero buttons stack and share one width, instead of two ragged sizes. */
+  .hero-actions,
+  .remodel-cta {
+    flex-direction: column;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-actions .button,
+  .remodel-cta .button {
+    text-align: center;
+  }
+
+  .hero-points {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .service-card,
+  .remodel-card {
+    padding: 26px 20px;
+  }
+
+  /* The service lists lose their dividers and most of their padding: same words, about
+     half the scrolling. */
+  .checklist li {
+    border-top: 0;
+    padding: 5px 0;
+  }
+
+  .checklist li::before {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+
+  /* Remodel steps: one column joined by a short live wire, so it reads as a sequence. */
+  .steps {
+    gap: 0;
+    margin-top: 56px;
+  }
+
+  .steps li {
+    position: relative;
+    border-top: 0;
+    padding: 0 0 64px;
+  }
+
+  .steps li:last-child {
+    padding-bottom: 0;
+  }
+
+  .steps li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: calc(50% - 1px);
+    bottom: 12px;
+    width: 2px;
+    height: 40px;
+    border-radius: 1px;
+    background: linear-gradient(180deg, transparent, var(--volt), var(--volt-spark), var(--volt), transparent)
+      0 0 / 100% 200%;
+    animation: current 1.6s linear infinite;
+  }
+
+  .reasons {
+    gap: 28px;
+  }
+
+  /* Site map: Services and About side by side, Contact underneath. */
+  .footer-map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 16px;
+  }
+
+  .footer-map > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  .footer-map li + li {
+    margin-top: 10px;
+  }
+
+  /* Room at the bottom so the call bar never covers the license line. */
+  .site-footer {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+
+  .call-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    /* Same frosted glass as the header. */
+    background-color: rgba(17, 22, 29, 0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-top: 1px solid var(--ink-line);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .call-bar .button {
+    text-align: center;
+    padding: 12px 10px;
+  }
+
+  /* Where the browser can follow the scroll, the bar waits below the screen until the
+     hero's own buttons are gone. Elsewhere it's just always there. */
+  @supports (animation-timeline: scroll()) {
+    .call-bar {
+      animation: bar-in linear both;
+      animation-timeline: scroll(root);
+      animation-range: 380px 520px;
+    }
+  }
+}
+
+@keyframes current {
+  from { background-position: 0 100%; }
+  to   { background-position: 0 -100%; }
+}
+
+@keyframes bar-in {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0); }
+}
+
+/* Less motion: the call bar simply stays put and the wire stays lit. */
+@media (prefers-reduced-motion: reduce) {
+  .call-bar,
+  .steps li::after {
+    animation: none;
   }
 }
