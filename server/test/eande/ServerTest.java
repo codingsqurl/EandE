@@ -53,17 +53,27 @@ final class ServerTest {
             lacks(Client.get("/").text(), "<details class=\"faq\">");
         });
 
-        test("the areas page shows the Google map, and only it may load frames from Google", () -> {
-            Client.Reply areas = Client.get("/areas");
-            contains(areas.text(), "<iframe class=\"map-frame\" src=\"https://www.google.com/maps?");
-            contains(areas.text(), "https://www.google.com/maps/search/?api=1&amp;query=Aspen%2C+CO");
-            equal(Server.CSP_AREAS, areas.header("Content-Security-Policy"));
-            contains(Server.CSP_AREAS, "frame-src https://www.google.com");
-            for (String path : Server.PAGES.keySet()) {
-                if (!path.equals("/areas")) {
-                    equal(Server.CSP, Client.get(path).header("Content-Security-Policy"));
-                }
+        test("the areas page links each town to its own page, which shows the town on a Google map", () -> {
+            String areas = Client.get("/areas").text();
+            contains(areas, "<iframe class=\"map-frame\" src=\"https://www.google.com/maps");
+            lacks(areas, "maps/search");
+            for (String town : Server.TOWNS) {
+                contains(areas, "<a class=\"town\" href=\"" + town + "\">");
             }
+            String page = Client.get("/woodland-park").text();
+            contains(page, "<h1>Woodland Park.</h1>");
+            contains(page, "<iframe class=\"map-frame\" src=\"https://www.google.com/maps?q=Woodland+Park%2C+CO&amp;output=embed\"");
+            contains(page, "<a class=\"back-link\" href=\"areas\">");
+        });
+
+        test("only the areas and town pages may load frames from Google", () -> {
+            contains(Server.CSP_MAPS, "frame-src https://www.google.com");
+            for (Map.Entry<String, String> page : Server.PAGES.entrySet()) {
+                String expected = Server.showsMap(page.getValue()) ? Server.CSP_MAPS : Server.CSP;
+                equal(expected, Client.get(page.getKey()).header("Content-Security-Policy"));
+            }
+            isTrue(Server.showsMap("areas.html") && Server.showsMap("aspen.html"), "map pages");
+            isTrue(!Server.showsMap("index.html") && !Server.showsMap("faq.html"), "other pages");
         });
 
         test("the question bar asks what's needed and links to a page for each service", () -> {
@@ -102,6 +112,18 @@ final class ServerTest {
                         {"<footer", "</html>"}}) {
                     equal(between(home, part[0], part[1]), between(page, part[0], part[1]));
                 }
+            }
+        });
+
+        test("the logo is the hero's background on every page, and nowhere else", () -> {
+            String css = Client.get("/style.css").text();
+            contains(between(css, ".hero::before {", "}"), "background: url(\"logo.webp\")");
+            equal(1, css.split(java.util.regex.Pattern.quote("url(\"logo.webp\")"), -1).length - 1);
+            for (String path : Server.PAGES.keySet()) {
+                String page = Client.get(path).text();
+                contains(page, "<section class=\"hero");
+                contains(page, "<link rel=\"preload\" href=\"logo.webp\" as=\"image\" type=\"image/webp\">");
+                lacks(page, "<img class=\"hero-logo\"");
             }
         });
 
@@ -235,6 +257,7 @@ final class ServerTest {
 
         test("the public files load with the right types", () -> {
             equal("image/svg+xml", Client.get("/favicon.svg").header("Content-Type"));
+            equal("image/webp", Client.get("/logo.webp").header("Content-Type"));
             equal("text/plain; charset=utf-8", Client.get("/robots.txt").header("Content-Type"));
             equal("public, max-age=86400", Client.get("/robots.txt").header("Cache-Control"));
             equal("image/png", Client.get("/og-image.png").header("Content-Type"));

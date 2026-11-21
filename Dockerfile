@@ -28,7 +28,7 @@ WORKDIR /srv
 # and the checklists never reach the live server, and neither does the source code.
 COPY --from=build /build/classes/ classes/
 COPY --from=build /build/br/ br/
-COPY *.html style.css favicon.svg apple-touch-icon.png og-image.png robots.txt sitemap.xml ./
+COPY *.html style.css favicon.svg logo.webp apple-touch-icon.png og-image.png robots.txt sitemap.xml ./
 
 # Run as a regular user rather than root, so a bug in the server can't take over the container.
 RUN adduser -S -H web

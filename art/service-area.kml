@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- E&E's service area: El Paso County plus the mountain towns along Highway 24 and over
+     Independence Pass to Aspen. Import it into Google My Maps (mymaps.google.com) to get the
+     outline shown on areas.html. The shape is a rough draft: drag its points in My Maps to fix it. -->
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>E&amp;E service area</name>
+    <Style id="area">
+      <LineStyle>
+        <color>ff01b3f5</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4001b3f5</color>
+      </PolyStyle>
+    </Style>
+    <Placemark>
+      <name>E&amp;E service area</name>
+      <description>Colorado Springs, El Paso County and the mountain towns to Aspen.</description>
+      <styleUrl>#area</styleUrl>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <!-- longitude,latitude pairs, going round clockwise from El Paso County's north-east corner. -->
+            <coordinates>
+              -104.05,39.13
+              -105.03,39.13
+              -105.10,39.10
+              -105.40,39.08
+              -105.85,39.12
+              -106.10,39.00
+              -106.30,39.15
+              -106.70,39.28
+              -106.95,39.25
+              -106.90,39.10
+              -106.55,39.00
+              -106.25,38.95
+              -106.20,38.75
+              -105.95,38.80
+              -105.75,38.92
+              -105.35,38.85
+              -105.07,38.80
+              -105.07,38.52
+              -104.05,38.52
+              -104.05,39.13
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>

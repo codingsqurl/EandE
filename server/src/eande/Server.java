@@ -40,24 +40,40 @@ public final class Server {
     // server is started from, unless SITE_DIR says otherwise.
     static final Path SITE = Path.of(envOr("SITE_DIR", System.getProperty("user.dir")));
 
+    // The towns served, each with its own page (woodland-park.html at /woodland-park), which the
+    // areas page links to. Each shows a Google map outlining the town.
+    static final List<String> TOWNS = List.of(
+            "colorado-springs", "manitou-springs", "fountain", "security-widefield", "monument", "falcon", "peyton",
+            "cascade", "green-mountain-falls", "woodland-park", "divide", "florissant", "lake-george", "hartsel",
+            "buena-vista", "twin-lakes", "aspen");
+
     // The site's pages: the address, then the file it comes from. The home page's question
     // bar ("What do you need help with?") links to one page for each service; the questions
     // and the towns served have pages of their own.
-    static final Map<String, String> PAGES = orderedMap(
-            "/", "index.html",
-            "/electrical", "electrical.html",
-            "/maintenance", "maintenance.html",
-            "/trees", "trees.html",
-            "/concrete", "concrete.html",
-            "/remodels", "remodels.html",
-            "/faq", "faq.html",
-            "/areas", "areas.html");
+    static final Map<String, String> PAGES = pages();
+
+    private static Map<String, String> pages() {
+        Map<String, String> pages = orderedMap(
+                "/", "index.html",
+                "/electrical", "electrical.html",
+                "/maintenance", "maintenance.html",
+                "/trees", "trees.html",
+                "/concrete", "concrete.html",
+                "/remodels", "remodels.html",
+                "/faq", "faq.html",
+                "/areas", "areas.html");
+        for (String town : TOWNS) {
+            pages.put("/" + town, town + ".html");
+        }
+        return pages;
+    }
 
     // Only these files are ever served. Everything else in the repo (README, notes,
     // the server's own code) stays private, even if someone guesses its name.
     // The number is how many seconds a browser may keep its copy.
     static final Map<String, Integer> PUBLIC_FILES = Map.of(
             "favicon.svg", 60 * 60 * 24,    // 1 day
+            "logo.webp", 60 * 60 * 24,
             "apple-touch-icon.png", 60 * 60 * 24,
             "og-image.png", 60 * 60 * 24,
             "robots.txt", 60 * 60 * 24,     // 1 day
@@ -79,8 +95,8 @@ public final class Server {
             + "object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
     // The 404 page keeps its styles inside itself, so it also needs inline styles allowed.
     static final String CSP_404 = CSP.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'");
-    // The areas page shows a Google map in a frame, so it alone may load frames from google.com.
-    static final String CSP_AREAS = CSP + "; frame-src https://www.google.com";
+    // The areas page and the town pages show a Google map in a frame, so they alone may load frames from google.com.
+    static final String CSP_MAPS = CSP + "; frame-src https://www.google.com";
 
     static final Map<String, String> SECURITY_HEADERS = orderedMap(
             "Content-Security-Policy", CSP,
@@ -247,6 +263,10 @@ public final class Server {
         return page.replace("href=\"style.css\"", "href=\"style.css?v=" + styleVersion() + "\"");
     }
 
+    static boolean showsMap(String file) {
+        return file.equals("areas.html") || TOWNS.contains(file.replace(".html", ""));
+    }
+
     // ---------- Squashing ahead of time ----------
 
     /**
@@ -275,8 +295,8 @@ public final class Server {
         // "no-cache" means the browser keeps a copy but checks with us before using it.
         // If nothing changed, we answer "304 Not Modified" and it reuses its copy.
         Map<String, String> headers = new LinkedHashMap<>(Map.of("Cache-Control", "no-cache", "ETag", etag));
-        if (file.equals("areas.html")) {
-            headers.put("Content-Security-Policy", CSP_AREAS);
+        if (showsMap(file)) {
+            headers.put("Content-Security-Policy", CSP_MAPS);
         }
         if (etag.equals(exchange.getRequestHeaders().getFirst("If-None-Match"))) {
             send(exchange, 304, null, null, headers);

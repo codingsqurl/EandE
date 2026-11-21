@@ -20,6 +20,7 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="theme-color" content="#11161d">
     <link rel="stylesheet" href="style.css">
+    <link rel="preload" href="logo.webp" as="image" type="image/webp">
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="E&amp;E Electrical &amp; Property Maintenance">
@@ -40,10 +41,6 @@
     <header class="site-header">
       <div class="container header-inner">
         <a class="brand" href="./" aria-label="E&amp;E home">
-          <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-            <rect width="32" height="32" rx="7" />
-            <path d="M18 4 8 18h7l-2 10 11-15h-7z" />
-          </svg>
           <span class="brand-name">E&amp;E <span>Electrical &amp; Property Maintenance</span></span>
         </a>
         <a class="button button-small" href="tel:+17208381503">Call now</a>
@@ -95,11 +92,12 @@
           <h2>Colorado Springs to Aspen.</h2>
           <p class="lead">Our service area follows Highway 24 west from the Springs, over the mountains to Aspen.</p>
           <!-- A Google map in a frame, so the page still needs no JavaScript of its own. The server lets
-               this one page show frames from google.com (CSP_AREAS in Server.java). To switch to Google's
-               official Maps Embed API, get a key and change the address to
-               https://www.google.com/maps/embed/v1/directions?key=KEY&origin=Colorado+Springs,CO&destination=Aspen,CO&waypoints=Buena+Vista,CO -->
-          <iframe class="map-frame" src="https://www.google.com/maps?saddr=Colorado+Springs,+CO&amp;daddr=Buena+Vista,+CO+to:Aspen,+CO&amp;output=embed"
-            title="Map of the route from Colorado Springs through Buena Vista to Aspen" loading="lazy"
+               this one page show frames from google.com (CSP_AREAS in Server.java).
+               PLACEHOLDER: for now it's a plain map of the area. To show the service area's outline,
+               import art/service-area.kml into Google My Maps (mymaps.google.com), make the map public,
+               and change the address to https://www.google.com/maps/d/embed?mid=THE-MAP-ID -->
+          <iframe class="map-frame" src="https://www.google.com/maps?ll=38.95,-105.6&amp;z=8&amp;output=embed"
+            title="Map of E&amp;E's service area, from Colorado Springs to Aspen" loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </section>
@@ -110,77 +108,77 @@
         <div class="container">
           <h2>Colorado Springs and El Paso County.</h2>
           <div class="towns">
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Colorado+Springs%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="colorado-springs">
               <span class="town-name">Colorado Springs</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Manitou+Springs%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="manitou-springs">
               <span class="town-name">Manitou Springs</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Fountain%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="fountain">
               <span class="town-name">Fountain</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Security-Widefield%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="security-widefield">
               <span class="town-name">Security-Widefield</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Monument%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="monument">
               <span class="town-name">Monument</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Falcon%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="falcon">
               <span class="town-name">Falcon</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Peyton%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="peyton">
               <span class="town-name">Peyton</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
           </div>
 
           <h2 class="towns-heading">Mountain towns to Aspen.</h2>
           <div class="towns">
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Cascade%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="cascade">
               <span class="town-name">Cascade</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Green+Mountain+Falls%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="green-mountain-falls">
               <span class="town-name">Green Mountain Falls</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Woodland+Park%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="woodland-park">
               <span class="town-name">Woodland Park</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Divide%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="divide">
               <span class="town-name">Divide</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Florissant%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="florissant">
               <span class="town-name">Florissant</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Lake+George%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="lake-george">
               <span class="town-name">Lake George</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Hartsel%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="hartsel">
               <span class="town-name">Hartsel</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Buena+Vista%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="buena-vista">
               <span class="town-name">Buena Vista</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Twin+Lakes%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="twin-lakes">
               <span class="town-name">Twin Lakes</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
-            <a class="town" href="https://www.google.com/maps/search/?api=1&amp;query=Aspen%2C+CO" target="_blank" rel="noopener">
+            <a class="town" href="aspen">
               <span class="town-name">Aspen</span>
-              <span class="town-link">Open in Google Maps</span>
+              <span class="town-link">See the map</span>
             </a>
           </div>
           <p class="towns-note">Nearby and not on the list? Call or text and ask.</p>

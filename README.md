@@ -4,7 +4,9 @@ Website for E&E, an electrical and property maintenance company in Colorado Spri
 
 - **Site:** plain HTML and CSS, no JavaScript. `index.html` is the home page, with a question bar
   linking to one page per service (`electrical.html`, `maintenance.html`, `trees.html`, `concrete.html`,
-  `remodels.html`), plus `faq.html`, `areas.html` (with a Google map) and `404.html`. They share one `style.css`.
+  `remodels.html`), plus `faq.html`, `areas.html` and `404.html`. The areas page links to a page for each town served
+  (`woodland-park.html` and so on, listed in `Server.TOWNS`), each with a Google map outlining the town.
+  They all share one `style.css`.
 - **Server:** Java 21 using only the JDK (`server/src/eande/`). It's a trimmed copy of the
   portfolio's server: the same firewall, security headers, caching and gzip.
 - **Hosting:** Docker on Fly.io (app `eande`, Denver region).

@@ -226,18 +226,10 @@ a {
   font-size: 0.95rem;
 }
 
-.brand-mark {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-}
-
-.brand-mark rect {
-  fill: var(--accent);
-}
-
-.brand-mark path {
-  fill: var(--ink);
+@media (max-width: 480px) {
+  .brand-name span {
+    display: none;
+  }
 }
 
 /* Hamburger button, same size and look as the light/dark switch beside it. */
@@ -360,12 +352,6 @@ a {
   stroke-linecap: round;
 }
 
-@media (max-width: 480px) {
-  .brand-name span {
-    display: none;
-  }
-}
-
 /* ---------- Hero ---------- */
 
 .hero {
@@ -384,7 +370,15 @@ a {
 }
 
 .hero .lead {
-  color: var(--muted-on-ink);
+  color: var(--text-on-ink);
+}
+
+/* The text sits on the logo (see "Hero: the logo is the background" below), so the intro is
+   brightened and both get a soft dark shadow to stay crisp over its white and gold. */
+.hero h1,
+.hero .lead,
+.hero-call {
+  text-shadow: 0 2px 14px rgba(17, 22, 29, 0.9), 0 1px 3px rgba(17, 22, 29, 0.8);
 }
 
 .hero-actions {
@@ -397,7 +391,7 @@ a {
 /* "Not sure which one? Call or text" under the question bar. */
 .hero-call {
   margin: 28px 0 0;
-  color: var(--muted-on-ink);
+  color: var(--text-on-ink);
 }
 
 .hero-call a {
@@ -407,7 +401,20 @@ a {
   text-underline-offset: 3px;
 }
 
-/* A service page's hero has a link back to the question bar above the heading. */
+/* A service page's hero has a link back to the question bar above the heading. It starts
+   with that small, quiet link and ends on solid buttons, so equal padding looks bottom-heavy;
+   a little less below evens it out to the eye. */
+.hero.hero-page {
+  padding-bottom: clamp(40px, 6vw, 60px);
+}
+
+/* Two classes, so this wins over the phone padding further down. */
+@media (max-width: 680px) {
+  .hero.hero-page {
+    padding-bottom: 36px;
+  }
+}
+
 .hero-page h1 {
   font-size: clamp(2.1rem, 5.5vw, 3.5rem);
 }
@@ -962,7 +969,11 @@ main .lead {
   inherits: false;
 }
 
-/* ----- Hero: a slow amber glow drifts behind the headline ----- */
+/* ----- Hero: the logo is the background -----
+   The E&E logo (logo.webp, made from art/logo-original.png) fills the hero on every page, and
+   only the hero. It's dimmed so the heading, intro and buttons read on top of it. Its black parts
+   were made see-through to drop the fake checkerboard in the file he sent, so it only works on a
+   dark background like this one. It's fitted inside the hero with some room at the edges. */
 .hero {
   position: relative;
   isolation: isolate;
@@ -972,45 +983,10 @@ main .lead {
 .hero::before {
   content: "";
   position: absolute;
-  inset: -20%;
+  inset: clamp(16px, 3vw, 32px) clamp(16px, 4vw, 32px);
   z-index: -1;
-  background:
-    radial-gradient(circle at 30% 40%, rgba(245, 179, 1, 0.18), transparent 40%),
-    radial-gradient(circle at 75% 65%, rgba(255, 122, 24, 0.14), transparent 45%);
-  animation: drift 14s ease-in-out infinite alternate;
-}
-
-@keyframes drift {
-  from { transform: translate(-6%, -4%) scale(1); }
-  to   { transform: translate(6%, 4%) scale(1.15); }
-}
-
-/* "whole property" in the home page headline: electric colours flowing through the words.
-   The gradient is twice as wide as the text and slides along it; the first colour repeats at
-   the end so the loop has no jump. */
-.accent {
-  background: linear-gradient(90deg,
-    var(--volt), var(--volt-hot), var(--volt-spark),
-    var(--volt-hot), var(--volt)) 0 0 / 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: shimmer 6s linear infinite;
-}
-
-@keyframes shimmer {
-  from { background-position: 0% 0; }
-  to   { background-position: 200% 0; }
-}
-
-/* ----- The lightning-bolt logo hums ----- */
-.brand-mark {
-  animation: hum 3s ease-in-out infinite;
-}
-
-@keyframes hum {
-  0%, 100% { filter: drop-shadow(0 0 2px rgba(245, 179, 1, 0.35)); }
-  50%      { filter: drop-shadow(0 0 10px rgba(245, 179, 1, 0.8)); }
+  background: url("logo.webp") center / contain no-repeat;
+  opacity: 0.3;
 }
 
 /* ----- Buttons: a glint of light sweeps across, and they glow on hover ----- */
@@ -1163,9 +1139,6 @@ main .lead {
 
 /* People who've asked their device for less motion: the lights stay on, but hold still. */
 @media (prefers-reduced-motion: reduce) {
-  .hero::before,
-  .accent,
-  .brand-mark,
   .button::after,
   .service-card::before,
   .contact-card::before,
