@@ -412,10 +412,21 @@ a {
   margin: 24px 0 0;
 }
 
-/* "Not sure which one? Call or text" under the question bar. */
+/* "Not sure which one? Call or text" under the question bar: a frosted-glass bar like the
+   tiles above it, see-through with a light blur and a soft shadow. */
 .hero-call {
-  margin: 28px 0 0;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 28px auto 0;
+  padding: 14px 22px;
   color: var(--text-on-ink);
+  background-color: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .hero-call a {
@@ -647,27 +658,15 @@ a {
 }
 
 .service-card {
-  /* Its colour and glowing edge are layers behind the content (see "Lights"). */
-  --fill: var(--card);
-  --edge: var(--card-line);
+  /* Its glass fill and glowing edge are set under "Lights". */
   border-radius: var(--radius);
   padding: clamp(18px, 3vw, 26px);
-  box-shadow: 0 1px 2px rgba(17, 22, 29, 0.04), 0 8px 24px rgba(17, 22, 29, 0.06);
 }
 
-/* Each service is its own clearly bounded block: a solid amber bar on top, a brighter edge,
+/* Each service is its own clearly bounded block: a solid amber bar on top, an amber edge,
    and a rule between the name and what's included. */
 .service-columns {
   gap: 24px;
-}
-
-.service-card {
-  --edge: rgba(245, 179, 1, 0.35);
-}
-
-/* The amber bar is painted into the card's fill, so it follows the rounded corners. */
-.service-card::after {
-  background: linear-gradient(var(--accent) 0 4px, var(--fill) 4px);
 }
 
 .service-card h3 {
@@ -881,8 +880,6 @@ a {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  --fill: var(--ink-2);
-  --edge: var(--ink-line);
   border-radius: var(--radius);
   padding: 20px 22px;
   text-decoration: none;
@@ -901,56 +898,70 @@ a {
   overflow-wrap: anywhere;
 }
 
-/* ----- Why E&E and Contact: see-through cards with a shadow -----
-   The dark sections get a soft amber glow behind them, so the glass has something to show.
-   Each card is see-through with a light blur, a soft shadow and the same running amber edge
-   as before, drawn as a ring only (the mask cuts out the middle) so the inside stays clear.
-   Headings and values are amber; the rest is bright enough to read on the glass. */
-.contact {
+/* ----- Every section: a soft glow behind it, so the glass has something to show -----
+   The dark sections get amber and orange; the light ones a fainter amber. On dark sections,
+   card headings and values are amber and the rest is bright enough to read on the glass. */
+.contact,
+.section-dark {
   background-image:
     radial-gradient(ellipse at 15% 0%, rgba(245, 179, 1, 0.14), transparent 55%),
     radial-gradient(ellipse at 90% 100%, rgba(255, 122, 24, 0.1), transparent 50%);
 }
 
-.contact .contact-card {
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.contact .contact-card::after {
-  display: none;
-}
-
-.contact .contact-card::before {
-  padding: 1px;
-  background:
-    conic-gradient(from var(--spin),
-      transparent 0deg, var(--volt) 40deg, var(--volt-spark) 60deg, var(--volt-hot) 80deg,
-      transparent 120deg, transparent 360deg),
-    rgba(255, 255, 255, 0.14);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+.section:not(.contact):not(.section-dark) {
+  background-image:
+    radial-gradient(ellipse at 85% 0%, rgba(245, 179, 1, 0.1), transparent 50%),
+    radial-gradient(ellipse at 10% 100%, rgba(245, 179, 1, 0.07), transparent 50%);
 }
 
 @media (hover: hover) {
-  .contact a.contact-card:hover {
+  .service-card:hover {
+    background-color: color-mix(in srgb, var(--card) 78%, transparent);
+  }
+
+  a.contact-card:hover {
     background-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 36px rgba(245, 179, 1, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 }
 
 .contact .reason h3,
-.contact .contact-value {
+.contact .contact-value,
+.section-dark h3 {
   color: var(--accent);
 }
 
 .contact .reason p,
-.contact .contact-label {
+.contact .contact-label,
+.section-dark .steps p {
   color: #dfe5ec;
+}
+
+/* The light sections' tiles and boxes (the question bar on service and town pages, the town
+   cards, the FAQ answers) are frosted glass too. */
+.section-alt .picker-option,
+.town,
+.faq {
+  background-color: color-mix(in srgb, var(--card) 62%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: color-mix(in srgb, var(--text) 12%, transparent);
+  box-shadow: 0 10px 28px rgba(17, 22, 29, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.section-alt .picker-option:hover,
+.town:hover,
+.faq:hover,
+.faq[open] {
+  background-color: color-mix(in srgb, var(--card) 80%, transparent);
+  border-color: var(--accent);
+  box-shadow: 0 14px 32px rgba(17, 22, 29, 0.14), 0 0 24px rgba(245, 179, 1, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* The page you're on stays solid amber. */
+.section-alt .picker-option[aria-current="page"] {
+  background-color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ---------- Footer ---------- */
@@ -1113,10 +1124,9 @@ main .lead {
   box-shadow: 0 0 24px rgba(245, 179, 1, 0.25);
 }
 
-/* ----- The "See every town" button: polished, with a brighter glint more often -----
-   A gold gradient with a light top edge and a soft amber glow, like a lit badge. */
-.button-shine {
-  padding: 16px 30px;
+/* ----- Solid buttons: polished gold, with a brighter glint every 3 seconds -----
+   A gold gradient with a light top edge, a soft amber glow and a faint ring, like a lit badge. */
+.button:not(.button-ghost) {
   border: 1px solid #ffd666;
   background-image: linear-gradient(180deg, #ffd34d 0%, var(--accent) 55%, #e09a00 100%);
   box-shadow:
@@ -1126,12 +1136,12 @@ main .lead {
     0 0 0 4px rgba(245, 179, 1, 0.12);
 }
 
-.button-shine::after {
+.button:not(.button-ghost)::after {
   background-image: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.85) 50%, transparent 70%);
   animation-duration: 3s;
 }
 
-.button-shine:hover {
+.button:not(.button-ghost):hover {
   background-image: linear-gradient(180deg, #ffdd70 0%, var(--accent-hover) 55%, #eba600 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
@@ -1140,9 +1150,8 @@ main .lead {
     0 0 0 6px rgba(245, 179, 1, 0.16);
 }
 
-/* The header's Call now uses the same shine, at the header's smaller size. */
-.button-shine.button-small {
-  padding: 8px 16px;
+/* The header's Call now: the same shine with a smaller glow to fit the header. */
+.button-small:not(.button-ghost) {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
     inset 0 -2px 0 rgba(0, 0, 0, 0.12),
@@ -1150,16 +1159,53 @@ main .lead {
     0 0 0 3px rgba(245, 179, 1, 0.12);
 }
 
-/* ----- Cards: a thin edge with amber light running round it -----
-   The card's own background is its edge colour. ::after is the card's colour laid on top,
-   1px smaller all round, so only a thin edge shows. ::before is a band of light spinning
-   behind that edge. It's always on, softly; hovering brightens it and lifts the card. */
+/* "See every town we serve" stands alone in its section, so it's a little bigger. */
+#area .button {
+  padding: 16px 30px;
+}
+
+/* ----- Outline buttons (Text a photo): frosted glass with a shadow ----- */
+.button-ghost {
+  background-color: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.button-ghost:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35), 0 0 24px rgba(245, 179, 1, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ----- Cards: see-through, with a shadow and amber light running round the edge -----
+   Every card is frosted glass: a see-through fill with a light blur and a soft shadow.
+   ::before is a band of light spinning round the edge, drawn as a ring only (the mask cuts
+   out the middle) so the inside stays clear. It's always on, softly; hovering brightens it
+   and lifts the card. On light sections the glass is a pale wash of the card colour; on the
+   dark ones it's a faint white. */
 .service-card,
 .contact-card {
   position: relative;
   isolation: isolate;
-  background-color: var(--edge);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.service-card {
+  --glass: color-mix(in srgb, var(--card) 62%, transparent);
+  --glass-shadow: 0 12px 32px rgba(17, 22, 29, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --ring: rgba(245, 179, 1, 0.35);
+}
+
+.contact-card {
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --ring: rgba(255, 255, 255, 0.14);
 }
 
 .service-card::before,
@@ -1168,23 +1214,29 @@ main .lead {
   position: absolute;
   inset: 0;
   z-index: -1;
+  padding: 1px;
   border-radius: inherit;
-  background: conic-gradient(from var(--spin),
-    transparent 0deg, var(--volt) 40deg, var(--volt-spark) 60deg, var(--volt-hot) 80deg,
-    transparent 120deg, transparent 360deg);
-  opacity: 0.55;
+  background:
+    conic-gradient(from var(--spin),
+      transparent 0deg, var(--volt) 40deg, var(--volt-spark) 60deg, var(--volt-hot) 80deg,
+      transparent 120deg, transparent 360deg),
+    var(--ring);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0.7;
   animation: spin 7s linear infinite;
   transition: opacity 0.3s ease;
 }
 
-.service-card::after,
-.contact-card::after {
+/* A service card keeps its solid amber bar along the top, following the rounded corners. */
+.service-card::after {
   content: "";
   position: absolute;
-  inset: 1px;
+  inset: 0;
   z-index: -1;
-  border-radius: calc(var(--radius) - 1px);
-  background-color: var(--fill);
+  border-radius: inherit;
+  background: linear-gradient(var(--accent) 0 4px, transparent 4px);
 }
 
 /* Each card's light starts at a different spot, so they don't all circle in step. */
@@ -1206,7 +1258,7 @@ main .lead {
   .service-card:hover,
   a.contact-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 0 40px rgba(245, 179, 1, 0.22);
+    box-shadow: var(--glass-shadow), 0 0 40px rgba(245, 179, 1, 0.22);
   }
 
   .service-card:hover::before,
