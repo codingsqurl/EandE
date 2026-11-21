@@ -38,10 +38,16 @@ final class ServerTest {
 
         test("every section the menu links to exists", () -> {
             String page = Client.get("/").text();
-            for (String id : new String[] {"services", "why", "contact"}) {
+            for (String id : new String[] {"why", "contact"}) {
                 contains(page, "href=\"./#" + id + "\"");
                 contains(page, "id=\"" + id + "\"");
             }
+            // The menu lists each service by name; the back links still lead to the question bar.
+            String menu = between(page, "<nav class=\"site-nav\"", "</nav>");
+            for (String service : new String[] {"electrical", "maintenance", "trees", "concrete", "remodels"}) {
+                contains(menu, "<a class=\"nav-service\" href=\"" + service + "\">");
+            }
+            contains(page, "id=\"services\"");
             contains(page, "<a href=\"areas\">Service area</a>");
             contains(page, "<a href=\"faq\">FAQ</a>");
         });

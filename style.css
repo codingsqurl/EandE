@@ -18,39 +18,20 @@
   --volt-spark: #fff1b8;
   --card: #fff;
   --card-line: var(--paper-2);
-  --show-moon: block;
-  --show-sun: none;
   color-scheme: light;
   --radius: 14px;
   --max: 1120px;
 }
 
-/* Dark mode. Used when the system asks for dark and the header switch is off,
-   or when the system asks for light and the switch is on. The two blocks must match. */
+/* Dark mode follows the visitor's system setting. There's no switch on the page. */
 @media (prefers-color-scheme: dark) {
-  :root:not(:has(#theme-toggle:checked)) {
+  :root {
     --paper: #161c24;
     --paper-2: #1d2530;
     --text: #e9edf1;
     --text-muted: #a3adb9;
     --card: #212a35;
     --card-line: #2c3644;
-    --show-moon: none;
-    --show-sun: block;
-    color-scheme: dark;
-  }
-}
-
-@media not (prefers-color-scheme: dark) {
-  :root:has(#theme-toggle:checked) {
-    --paper: #161c24;
-    --paper-2: #1d2530;
-    --text: #e9edf1;
-    --text-muted: #a3adb9;
-    --card: #212a35;
-    --card-line: #2c3644;
-    --show-moon: none;
-    --show-sun: block;
     color-scheme: dark;
   }
 }
@@ -232,7 +213,7 @@ a {
   }
 }
 
-/* Hamburger button, same size and look as the light/dark switch beside it. */
+/* Hamburger button. Its lines turn amber on hover and fold into an × while the menu is open. */
 .menu-button {
   display: grid;
   place-items: center;
@@ -243,14 +224,16 @@ a {
   background: none;
   border: 2px solid var(--ink-line);
   border-radius: 10px;
-  color: var(--muted-on-ink);
+  color: var(--text-on-ink);
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, box-shadow 0.2s;
 }
 
-.menu-button:hover {
-  border-color: var(--muted-on-ink);
-  color: var(--text-on-ink);
+.menu-button:hover,
+.header-inner:has(.site-nav:popover-open) .menu-button {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(245, 179, 1, 0.3);
 }
 
 .menu-button svg {
@@ -259,20 +242,52 @@ a {
   stroke: currentColor;
   stroke-width: 2;
   stroke-linecap: round;
+  overflow: visible;
 }
 
-/* The menu itself: a popover, so the browser shows it on top of everything when the button is
-   pressed. It drops down under the sticky header, lined up with the right edge of the page. */
+.menu-button .bar {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.2s ease, opacity 0.15s;
+}
+
+/* The middle line is shorter, so the closed icon reads as a menu and not just stripes. */
+.menu-button .bar-2 {
+  transform: scaleX(0.7);
+  transform-origin: right;
+}
+
+.header-inner:has(.site-nav:popover-open) .bar-1 {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.header-inner:has(.site-nav:popover-open) .bar-2 {
+  opacity: 0;
+}
+
+.header-inner:has(.site-nav:popover-open) .bar-3 {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* The menu: a popover, so the browser shows it on top of everything when the button is pressed.
+   It's a small site map in the same frosted glass as the header: the services with their
+   icons, the rest of the site, then Call and Text. It drops down under the header, lined up
+   with the page's right edge, and scrolls inside itself on a short phone screen. */
 .site-nav {
   position: fixed;
   inset: 72px clamp(16px, 4vw, 32px) auto auto;
   margin: 0;
-  width: min(260px, calc(100vw - 32px));
-  padding: 8px;
-  background-color: var(--ink-2);
+  width: min(320px, calc(100vw - 32px));
+  max-height: calc(100vh - 88px);
+  overflow-y: auto;
+  padding: 14px;
+  background-color: rgba(26, 33, 43, 0.86);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
   border: 1px solid var(--ink-line);
+  border-top: 2px solid var(--accent);
   border-radius: var(--radius);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
   color: var(--text-on-ink);
 }
 
@@ -288,68 +303,77 @@ a {
   flex-direction: column;
 }
 
-.site-nav a {
+/* Small capital labels, like the footer's site map. */
+.nav-heading {
+  margin: 4px 10px 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted-on-ink);
+}
+
+.nav-services,
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-links {
+  padding-bottom: 12px;
+}
+
+.nav-services {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--ink-line);
+}
+
+.site-nav a:not(.button) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   text-decoration: none;
-  color: var(--muted-on-ink);
-  padding: 12px 14px;
+  color: var(--text-on-ink);
+  font-weight: 600;
+  padding: 10px;
   border-radius: 8px;
+  border-left: 3px solid transparent;
+  transition: background-color 0.15s, border-color 0.15s;
 }
 
-.site-nav a:hover {
-  background-color: var(--ink);
-  color: var(--text-on-ink);
+.site-nav a:not(.button):hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-left-color: var(--accent);
 }
 
-/* The light/dark switch: a moon in light mode, a sun in dark mode. */
-.theme-toggle {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  border: 2px solid var(--ink-line);
-  border-radius: 10px;
-  color: var(--muted-on-ink);
-  cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
-}
-
-.theme-toggle:hover {
-  border-color: var(--muted-on-ink);
-  color: var(--text-on-ink);
-}
-
-/* The real checkbox stays in place for keyboards and screen readers, just invisible. */
-.theme-toggle input {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.theme-toggle:has(input:focus-visible) {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.theme-toggle svg {
+.nav-service svg {
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
+  fill: var(--accent);
 }
 
-.icon-moon {
-  display: var(--show-moon);
-  fill: currentColor;
+/* Call and Text side by side at the bottom. */
+.nav-contact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ink-line);
 }
 
-.icon-sun {
-  display: var(--show-sun);
-  fill: currentColor;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
+.nav-contact .button {
+  text-align: center;
+  padding: 10px 8px;
+  font-size: 0.95rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-button .bar {
+    transition: none;
+  }
 }
 
 /* ---------- Hero ---------- */
@@ -506,6 +530,23 @@ a {
   font-size: 0.9rem;
   line-height: 1.35;
   color: var(--opt-muted);
+}
+
+/* In the hero the tiles are frosted glass: see-through, with a light blur of the logo behind
+   them and a soft shadow lifting them off it. */
+.hero .picker-option {
+  background-color: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.hero .picker-option:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4), 0 0 28px rgba(245, 179, 1, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
 
 /* The service page you're already on: lit up in amber. */
@@ -860,6 +901,58 @@ a {
   overflow-wrap: anywhere;
 }
 
+/* ----- Why E&E and Contact: see-through cards with a shadow -----
+   The dark sections get a soft amber glow behind them, so the glass has something to show.
+   Each card is see-through with a light blur, a soft shadow and the same running amber edge
+   as before, drawn as a ring only (the mask cuts out the middle) so the inside stays clear.
+   Headings and values are amber; the rest is bright enough to read on the glass. */
+.contact {
+  background-image:
+    radial-gradient(ellipse at 15% 0%, rgba(245, 179, 1, 0.14), transparent 55%),
+    radial-gradient(ellipse at 90% 100%, rgba(255, 122, 24, 0.1), transparent 50%);
+}
+
+.contact .contact-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.contact .contact-card::after {
+  display: none;
+}
+
+.contact .contact-card::before {
+  padding: 1px;
+  background:
+    conic-gradient(from var(--spin),
+      transparent 0deg, var(--volt) 40deg, var(--volt-spark) 60deg, var(--volt-hot) 80deg,
+      transparent 120deg, transparent 360deg),
+    rgba(255, 255, 255, 0.14);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+@media (hover: hover) {
+  .contact a.contact-card:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 36px rgba(245, 179, 1, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+}
+
+.contact .reason h3,
+.contact .contact-value {
+  color: var(--accent);
+}
+
+.contact .reason p,
+.contact .contact-label {
+  color: #dfe5ec;
+}
+
 /* ---------- Footer ---------- */
 
 .site-footer {
@@ -1018,6 +1111,43 @@ main .lead {
 .button-ghost:hover {
   border-color: var(--volt);
   box-shadow: 0 0 24px rgba(245, 179, 1, 0.25);
+}
+
+/* ----- The "See every town" button: polished, with a brighter glint more often -----
+   A gold gradient with a light top edge and a soft amber glow, like a lit badge. */
+.button-shine {
+  padding: 16px 30px;
+  border: 1px solid #ffd666;
+  background-image: linear-gradient(180deg, #ffd34d 0%, var(--accent) 55%, #e09a00 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.12),
+    0 6px 18px rgba(245, 179, 1, 0.35),
+    0 0 0 4px rgba(245, 179, 1, 0.12);
+}
+
+.button-shine::after {
+  background-image: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.85) 50%, transparent 70%);
+  animation-duration: 3s;
+}
+
+.button-shine:hover {
+  background-image: linear-gradient(180deg, #ffdd70 0%, var(--accent-hover) 55%, #eba600 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.12),
+    0 10px 28px rgba(245, 179, 1, 0.5),
+    0 0 0 6px rgba(245, 179, 1, 0.16);
+}
+
+/* The header's Call now uses the same shine, at the header's smaller size. */
+.button-shine.button-small {
+  padding: 8px 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.12),
+    0 4px 14px rgba(245, 179, 1, 0.35),
+    0 0 0 3px rgba(245, 179, 1, 0.12);
 }
 
 /* ----- Cards: a thin edge with amber light running round it -----
