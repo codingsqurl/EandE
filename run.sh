@@ -28,10 +28,13 @@ if [ "$1" = "pages" ]; then
   mkdir build-pages
   cp 404.html style.css favicon.svg apple-touch-icon.png og-image.png build-pages/
   # Like the Java server, add the stylesheet's fingerprint to its link, so phones fetch the new
-  # styles after every publish instead of reusing a saved copy.
+  # styles after every publish instead of reusing a saved copy. GitHub Pages serves
+  # electrical.html at /electrical, so the service pages' links work there too.
   version="$(shasum style.css | cut -c1-8)"
-  awk '{ print } /<meta charset="UTF-8">/ { print "    <meta name=\"robots\" content=\"noindex\">" }' \
-    index.html | sed "s|href=\"style.css\"|href=\"style.css?v=$version\"|" > build-pages/index.html
+  for page in index electrical maintenance trees concrete remodels faq areas; do
+    awk '{ print } /<meta charset="UTF-8">/ { print "    <meta name=\"robots\" content=\"noindex\">" }' \
+      "$page.html" | sed "s|href=\"style.css\"|href=\"style.css?v=$version\"|" > "build-pages/$page.html"
+  done
   touch build-pages/.nojekyll
   # The gh-pages branch holds only the latest copy, so it's replaced each time.
   origin="$(git remote get-url origin)"
@@ -45,4 +48,13 @@ fi
 # Compile every .java file into build/. It takes a second or two.
 rm -rf build
 javac -d build --release 21 $(find server/src -name '*.java')
+
+# Squash the site's text with Brotli ahead of time (brew install brotli). Without it,
+# or for a file edited while the server runs, the server falls back to gzip.
+rm -rf br
+if command -v brotli > /dev/null; then
+  java -cp build eande.Server brotli-sources
+  brotli -q 11 --rm br/*
+fi
+
 HOST="${HOST:-127.0.0.1}" PORT="${PORT:-8001}" exec java -cp build eande.Server

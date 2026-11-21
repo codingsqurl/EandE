@@ -11,8 +11,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -37,6 +39,19 @@ public final class Server {
     // The folder holding index.html, style.css and the rest. It's the folder the
     // server is started from, unless SITE_DIR says otherwise.
     static final Path SITE = Path.of(envOr("SITE_DIR", System.getProperty("user.dir")));
+
+    // The site's pages: the address, then the file it comes from. The home page's question
+    // bar ("What do you need help with?") links to one page for each service; the questions
+    // and the towns served have pages of their own.
+    static final Map<String, String> PAGES = orderedMap(
+            "/", "index.html",
+            "/electrical", "electrical.html",
+            "/maintenance", "maintenance.html",
+            "/trees", "trees.html",
+            "/concrete", "concrete.html",
+            "/remodels", "remodels.html",
+            "/faq", "faq.html",
+            "/areas", "areas.html");
 
     // Only these files are ever served. Everything else in the repo (README, notes,
     // the server's own code) stays private, even if someone guesses its name.
@@ -64,6 +79,8 @@ public final class Server {
             + "object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
     // The 404 page keeps its styles inside itself, so it also needs inline styles allowed.
     static final String CSP_404 = CSP.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'");
+    // The areas page shows a Google map in a frame, so it alone may load frames from google.com.
+    static final String CSP_AREAS = CSP + "; frame-src https://www.google.com";
 
     static final Map<String, String> SECURITY_HEADERS = orderedMap(
             "Content-Security-Policy", CSP,
@@ -78,13 +95,26 @@ public final class Server {
             "Cross-Origin-Resource-Policy", "same-origin",
             // Older browsers that don't understand frame-ancestors in the CSP.
             "X-Frame-Options", "DENY",
-            "Strict-Transport-Security", "max-age=31536000");
+            "Strict-Transport-Security", "max-age=31536000; includeSubDomains");
 
     // Files other sites are meant to show, like the preview a chat app draws for a shared link.
     static final Set<String> SHAREABLE = Set.of("og-image.png", "apple-touch-icon.png");
 
     // Text responses at least this big are squashed before sending, so pages download faster.
     static final int GZIP_MIN_SIZE = 500;
+
+    // Brotli squashes text about a fifth smaller than gzip, but Java can't write it. So the
+    // build squashes the site's text ahead of time (./run.sh and the Dockerfile run the
+    // brotli program) into br/, naming each file after a fingerprint of the text inside.
+    // A file edited after the build has a new fingerprint, so it falls back to gzip.
+    static final Path BROTLI = SITE.resolve("br");
+    static Path brotliFile(byte[] body) {
+        return BROTLI.resolve(sha256(body).substring(0, 16) + ".br");
+    }
+    /** The unsquashed copy the brotli program reads, which it replaces with brotliFile. */
+    static Path brotliSource(byte[] body) {
+        return BROTLI.resolve(sha256(body).substring(0, 16));
+    }
 
     // ---------- The stylesheet ----------
     // Its address includes a fingerprint of its contents (style.css?v=1a2b3c4d), so
@@ -98,6 +128,10 @@ public final class Server {
     static final boolean QUIET = Boolean.getBoolean("eande.quiet");
 
     public static void main(String[] args) throws IOException {
+        if (args.length > 0 && args[0].equals("brotli-sources")) {
+            writeBrotliSources();
+            return;
+        }
         int port = Integer.parseInt(envOr("PORT", "8080"));
         String host = envOr("HOST", "0.0.0.0");
 
@@ -178,8 +212,8 @@ public final class Server {
             send(exchange, 200, plain("ok"), CONTENT_TYPES.get("txt"), Map.of("Cache-Control", "no-store"));
             return 200;
         }
-        if (path.equals("/")) {
-            return home(exchange);
+        if (PAGES.containsKey(path)) {
+            return page(exchange, PAGES.get(path));
         }
         if (path.equals("/style.css")) {
             String cache = styleVersion().equals(queryValue(exchange, "v"))
@@ -205,20 +239,45 @@ public final class Server {
         return 404;
     }
 
-    // ---------- The home page ----------
+    // ---------- The pages ----------
 
-    /** index.html with the stylesheet's fingerprint filled in. It's small, so it's read fresh each visit. */
-    static String homePage() {
-        String page = new String(read(SITE.resolve("index.html")), StandardCharsets.UTF_8);
+    /** A page with the stylesheet's fingerprint filled in. Pages are small, so they're read fresh each visit. */
+    static String pageText(String file) {
+        String page = new String(read(SITE.resolve(file)), StandardCharsets.UTF_8);
         return page.replace("href=\"style.css\"", "href=\"style.css?v=" + styleVersion() + "\"");
     }
 
-    static int home(HttpExchange exchange) throws IOException {
-        byte[] page = homePage().getBytes(StandardCharsets.UTF_8);
+    // ---------- Squashing ahead of time ----------
+
+    /**
+     * Writes each text response, exactly as it would be sent, into br/ under its fingerprint,
+     * for the brotli program to squash next. The build runs this with "brotli-sources".
+     */
+    static void writeBrotliSources() throws IOException {
+        Files.createDirectories(BROTLI);
+        List<byte[]> bodies = new ArrayList<>();
+        for (String file : PAGES.values()) {
+            bodies.add(pageText(file).getBytes(StandardCharsets.UTF_8));
+        }
+        for (String file : new String[] {"style.css", "404.html", "favicon.svg", "robots.txt", "sitemap.xml"}) {
+            bodies.add(read(SITE.resolve(file)));
+        }
+        for (byte[] body : bodies) {
+            if (body.length >= GZIP_MIN_SIZE) {
+                Files.write(brotliSource(body), body);
+            }
+        }
+    }
+
+    static int page(HttpExchange exchange, String file) throws IOException {
+        byte[] page = pageText(file).getBytes(StandardCharsets.UTF_8);
         String etag = "\"" + sha256(page).substring(0, 16) + "\"";
         // "no-cache" means the browser keeps a copy but checks with us before using it.
         // If nothing changed, we answer "304 Not Modified" and it reuses its copy.
-        Map<String, String> headers = Map.of("Cache-Control", "no-cache", "ETag", etag);
+        Map<String, String> headers = new LinkedHashMap<>(Map.of("Cache-Control", "no-cache", "ETag", etag));
+        if (file.equals("areas.html")) {
+            headers.put("Content-Security-Policy", CSP_AREAS);
+        }
         if (etag.equals(exchange.getRequestHeaders().getFirst("If-None-Match"))) {
             send(exchange, 304, null, null, headers);
             return 304;
@@ -254,9 +313,15 @@ public final class Server {
         if (text) {
             headers.set("Vary", "Accept-Encoding");
             String accepts = exchange.getRequestHeaders().getFirst("Accept-Encoding");
-            if (body.length >= GZIP_MIN_SIZE && accepts != null && accepts.contains("gzip")) {
-                body = gzip(body);
-                headers.set("Content-Encoding", "gzip");
+            if (body.length >= GZIP_MIN_SIZE) {
+                Path squashed = brotliFile(body);
+                if (accepts(accepts, "br") && Files.isRegularFile(squashed)) {
+                    body = read(squashed);
+                    headers.set("Content-Encoding", "br");
+                } else if (accepts(accepts, "gzip")) {
+                    body = gzip(body);
+                    headers.set("Content-Encoding", "gzip");
+                }
             }
         }
 
@@ -282,6 +347,20 @@ public final class Server {
         Map<String, String> all = new LinkedHashMap<>(headers);
         all.put("Cache-Control", "no-store");
         return all;
+    }
+
+    /** Whether an Accept-Encoding header like "gzip, deflate, br" allows the coding (";q=0" means no). */
+    static boolean accepts(String header, String coding) {
+        if (header == null) {
+            return false;
+        }
+        for (String part : header.split(",")) {
+            String[] pieces = part.split(";");
+            if (pieces[0].trim().equalsIgnoreCase(coding)) {
+                return pieces.length == 1 || !pieces[1].replace(" ", "").matches("q=0(\\.0*)?");
+            }
+        }
+        return false;
     }
 
     static String contentType(String name) {

@@ -9,6 +9,9 @@ import static eande.Check.test;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
@@ -35,18 +38,85 @@ final class ServerTest {
 
         test("every section the menu links to exists", () -> {
             String page = Client.get("/").text();
-            for (String id : new String[] {"services", "remodels", "why", "area", "faq", "contact"}) {
-                contains(page, "href=\"#" + id + "\"");
+            for (String id : new String[] {"services", "why", "contact"}) {
+                contains(page, "href=\"./#" + id + "\"");
                 contains(page, "id=\"" + id + "\"");
+            }
+            contains(page, "<a href=\"areas\">Service area</a>");
+            contains(page, "<a href=\"faq\">FAQ</a>");
+        });
+
+        test("the questions and answers have a page of their own", () -> {
+            String faq = Client.get("/faq").text();
+            contains(faq, "<h1>Common questions.</h1>");
+            contains(faq, "\"@type\": \"FAQPage\"");
+            lacks(Client.get("/").text(), "<details class=\"faq\">");
+        });
+
+        test("the areas page shows the Google map, and only it may load frames from Google", () -> {
+            Client.Reply areas = Client.get("/areas");
+            contains(areas.text(), "<iframe class=\"map-frame\" src=\"https://www.google.com/maps?");
+            contains(areas.text(), "https://www.google.com/maps/search/?api=1&amp;query=Aspen%2C+CO");
+            equal(Server.CSP_AREAS, areas.header("Content-Security-Policy"));
+            contains(Server.CSP_AREAS, "frame-src https://www.google.com");
+            for (String path : Server.PAGES.keySet()) {
+                if (!path.equals("/areas")) {
+                    equal(Server.CSP, Client.get(path).header("Content-Security-Policy"));
+                }
+            }
+        });
+
+        test("the question bar asks what's needed and links to a page for each service", () -> {
+            String home = Client.get("/").text();
+            contains(home, "What do you need help with?");
+            for (String service : new String[] {"electrical", "maintenance", "trees", "concrete", "remodels"}) {
+                contains(home, "<a class=\"picker-option\" href=\"" + service + "\">");
+                equal(200, Client.get("/" + service).status());
+            }
+        });
+
+        test("every service page loads, with its own title and address for Google", () -> {
+            for (String path : Server.PAGES.keySet()) {
+                Client.Reply reply = Client.get(path);
+                equal(200, reply.status());
+                equal("no-cache", reply.header("Cache-Control"));
+                contains(reply.text(), "<link rel=\"canonical\" href=\"https://eande.fly.dev" + path + "\">");
+                isTrue(reply.text().matches("(?s).*href=\"style\\.css\\?v=[0-9a-f]{8}\".*"), path + " style.css?v=<8 hex>");
+            }
+        });
+
+        test("a service page marks itself on its question bar and has no JavaScript", () -> {
+            String page = Client.get("/trees").text();
+            contains(page, "<a class=\"picker-option\" href=\"trees\" aria-current=\"page\">");
+            equal(1, page.split("aria-current", -1).length - 1);
+            lacks(page, "<script");
+        });
+
+        test("every page shares the home page's header, contact section, footer and call bar", () -> {
+            String home = Client.get("/").text();
+            for (String path : Server.PAGES.keySet()) {
+                String page = Client.get(path).text();
+                for (String[] part : new String[][] {
+                        {"<a class=\"skip-link\"", "</header>"},
+                        {"<section id=\"contact\"", "</section>"},
+                        {"<footer", "</html>"}}) {
+                    equal(between(home, part[0], part[1]), between(page, part[0], part[1]));
+                }
+            }
+        });
+
+        test("no page uses bullet-point separators", () -> {
+            for (String path : Server.PAGES.keySet()) {
+                lacks(Client.get(path).text(), "·");
             }
         });
 
         test("every page carries the security headers", () -> {
-            for (String path : new String[] {"/", "/style.css", "/favicon.svg", "/nope"}) {
+            for (String path : new String[] {"/", "/areas", "/style.css", "/favicon.svg", "/nope"}) {
                 Client.Reply reply = Client.get(path);
                 for (Map.Entry<String, String> header : Server.SECURITY_HEADERS.entrySet()) {
-                    if (path.equals("/nope") && header.getKey().equals("Content-Security-Policy")) {
-                        continue; // checked separately: the 404 page has its own
+                    if ((path.equals("/nope") || path.equals("/areas")) && header.getKey().equals("Content-Security-Policy")) {
+                        continue; // checked separately: the 404 and areas pages have their own
                     }
                     equal(header.getValue(), reply.header(header.getKey()));
                 }
@@ -54,7 +124,7 @@ final class ServerTest {
         });
 
         test("every FAQ question on the page is also in the structured data, word for word", () -> {
-            String page = Client.get("/").text();
+            String page = Client.get("/faq").text();
             java.util.regex.Matcher question = java.util.regex.Pattern.compile("<summary>(.*?)</summary>").matcher(page);
             int found = 0;
             while (question.find()) {
@@ -105,11 +175,54 @@ final class ServerTest {
 
         test("text is squashed with gzip when the browser accepts it", () -> {
             Client.Reply plain = Client.get("/");
-            Client.Reply zipped = Client.get("/", "Accept-Encoding: gzip, br");
+            Client.Reply zipped = Client.get("/", "Accept-Encoding: gzip");
             equal("gzip", zipped.header("Content-Encoding"));
             isTrue(zipped.body().length < plain.body().length / 2, "much smaller");
             byte[] unzipped = new GZIPInputStream(new ByteArrayInputStream(zipped.body())).readAllBytes();
             equal(plain.text(), new String(unzipped, StandardCharsets.UTF_8));
+        });
+
+        test("text squashed ahead of time with Brotli is sent to browsers that accept it", () -> {
+            // Java can't decode Brotli either, so a stand-in file checks the server picks it up.
+            Path file = Server.brotliFile(Client.get("/").body());
+            boolean madeHere = !Files.exists(file);
+            if (madeHere) {
+                Files.createDirectories(file.getParent());
+                Files.write(file, Server.plain("stand-in"));
+            }
+            try {
+                Client.Reply reply = Client.get("/", "Accept-Encoding: gzip, deflate, br");
+                equal("br", reply.header("Content-Encoding"));
+                equal("Accept-Encoding", reply.header("Vary"));
+                isTrue(Arrays.equals(Files.readAllBytes(file), reply.body()), "the squashed file's bytes");
+                equal("gzip", Client.get("/", "Accept-Encoding: gzip, br;q=0").header("Content-Encoding"));
+            } finally {
+                if (madeHere) {
+                    Files.delete(file);
+                }
+            }
+        });
+
+        test("text with no Brotli copy, like a file edited after the build, falls back to gzip", () -> {
+            Path file = Server.brotliFile(Client.get("/").body());
+            boolean had = Files.exists(file);
+            byte[] saved = had ? Files.readAllBytes(file) : null;
+            Files.deleteIfExists(file);
+            try {
+                equal("gzip", Client.get("/", "Accept-Encoding: gzip, br").header("Content-Encoding"));
+            } finally {
+                if (had) {
+                    Files.write(file, saved);
+                }
+            }
+        });
+
+        test("Accept-Encoding is read word by word, and q=0 means no", () -> {
+            isTrue(Server.accepts("gzip, deflate, br", "br"), "br listed");
+            isTrue(Server.accepts("BR;q=0.5", "br"), "any case, any weight above 0");
+            isTrue(!Server.accepts("gzip, br;q=0", "br"), "q=0");
+            isTrue(!Server.accepts("brotli", "br"), "only the whole word");
+            isTrue(!Server.accepts(null, "gzip"), "no header");
         });
 
         test("the fingerprinted stylesheet is kept for a year, a plain one for 10 minutes", () -> {
@@ -137,11 +250,13 @@ final class ServerTest {
             contains(page, "\"hasOfferCatalog\"");
         });
 
-        test("the sitemap is served as XML and lists the home page", () -> {
+        test("the sitemap is served as XML and lists every page", () -> {
             Client.Reply sitemap = Client.get("/sitemap.xml");
             equal(200, sitemap.status());
             equal("application/xml; charset=utf-8", sitemap.header("Content-Type"));
-            contains(sitemap.text(), "<loc>https://eande.fly.dev/</loc>");
+            for (String path : Server.PAGES.keySet()) {
+                contains(sitemap.text(), "<loc>https://eande.fly.dev" + path + "</loc>");
+            }
         });
 
         test("robots.txt allows everything and points to the sitemap", () -> {
@@ -151,7 +266,7 @@ final class ServerTest {
         });
 
         test("nothing else in the repo can be reached, even by name", () -> {
-            for (String path : new String[] {"/README.md", "/index.html", "/404.html", "/Dockerfile",
+            for (String path : new String[] {"/README.md", "/index.html", "/electrical.html", "/404.html", "/Dockerfile",
                     "/fly.toml", "/run.sh", "/CHECKLIST.md", "/server/src/eande/Server.java", "/a/b/c"}) {
                 equal(404, Client.get(path).status());
             }
@@ -177,5 +292,12 @@ final class ServerTest {
             equal(405, post.status());
             equal("GET, HEAD", post.header("Allow"));
         });
+    }
+
+    /** The text from the first start up to and including the end that follows it. */
+    private static String between(String text, String start, String end) {
+        int from = text.indexOf(start);
+        isTrue(from >= 0, "found <" + start + ">");
+        return text.substring(from, text.indexOf(end, from) + end.length());
     }
 }

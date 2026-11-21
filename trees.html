@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!--
+  One of E&E's service pages. The home page's question bar links here. The server
+  (server/src/eande/Server.java) sends this file and fills in the stylesheet's fingerprint.
+
+  The header, footer, contact section and call bar are the same on every page (a test checks),
+  so change them on all eight pages at once. Anything marked PLACEHOLDER must be confirmed before launch.
+-->
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Tree Trimming &amp; Removal in Colorado Springs | E&amp;E Electrical &amp; Property Maintenance</title>
+    <meta name="description" content="Tree trimming, pruning, full removal, storm cleanup and hauling from Colorado Springs to Aspen.">
+    <link rel="canonical" href="https://eande.fly.dev/trees">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#11161d">
+    <link rel="stylesheet" href="style.css">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="E&amp;E Electrical &amp; Property Maintenance">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Tree Trimming &amp; Removal in Colorado Springs | E&amp;E Electrical &amp; Property Maintenance">
+    <meta property="og:description" content="Tree trimming, pruning, full removal, storm cleanup and hauling from Colorado Springs to Aspen.">
+    <meta property="og:url" content="https://eande.fly.dev/trees">
+    <meta property="og:image" content="https://eande.fly.dev/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="E&amp;E Electrical &amp; Property Maintenance, serving Colorado Springs and the mountain towns west to Aspen">
+    <meta name="twitter:card" content="summary_large_image">
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="./" aria-label="E&amp;E home">
+          <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="7" />
+            <path d="M18 4 8 18h7l-2 10 11-15h-7z" />
+          </svg>
+          <span class="brand-name">E&amp;E <span>Electrical &amp; Property Maintenance</span></span>
+        </a>
+        <a class="button button-small" href="tel:+17208381503">Call now</a>
+        <!-- Light/dark switch. The page follows the visitor's system setting; ticking this flips it.
+             Pure CSS (style.css looks for :checked with :has), so it resets on reload. -->
+        <label class="theme-toggle" title="Switch light / dark mode">
+          <input type="checkbox" id="theme-toggle" aria-label="Switch light or dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 14.5A9 9 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z" />
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.5" />
+            <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1" />
+          </svg>
+        </label>
+        <!-- Hamburger menu. A built-in popover, so it opens and closes with no JavaScript;
+             tapping outside it or pressing Esc closes it. -->
+        <button class="menu-button" type="button" popovertarget="site-menu" aria-label="Menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18M3 12h18M3 18h18" />
+          </svg>
+        </button>
+        <!-- The links start with ./ so they lead back to the home page's sections from a service page. -->
+        <nav class="site-nav" id="site-menu" popover aria-label="Main">
+          <a href="./#services">Services</a>
+          <a href="./#why">Why E&amp;E</a>
+          <a href="areas">Service area</a>
+          <a href="faq">FAQ</a>
+          <a href="./#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+
+      <section class="hero hero-page">
+        <div class="container hero-inner">
+          <a class="back-link" href="./#services">All services</a>
+          <h1>Tree trimming and removal.</h1>
+          <p class="lead">Trimming, pruning and full removal across Colorado Springs, with fast storm cleanup when you need it. We haul everything away when we're done.</p>
+          <div class="hero-actions">
+            <a class="button" href="tel:+17208381503">Call (720) 838-1503</a>
+            <a class="button button-ghost" href="sms:+17208381503">Text a photo</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <h2>What we handle.</h2>
+          <!-- PLACEHOLDER: confirm this list with the owner -->
+          <div class="service-columns">
+            <article class="service-card">
+              <h3>Trimming and pruning</h3>
+              <p>Branches cut back from the roof, the driveway and the neighbor's yard, with dead wood taken out.</p>
+            </article>
+            <article class="service-card">
+              <h3>Tree removal</h3>
+              <p>Dead, dying or unwanted trees taken down safely, in sections when space is tight.</p>
+            </article>
+            <article class="service-card">
+              <h3>Storm cleanup</h3>
+              <p>Fallen limbs and storm damage cleared quickly. A limb on the roof is an urgent call, so call us.</p>
+            </article>
+            <article class="service-card">
+              <h3>Hauling</h3>
+              <p>Branches, trunks and debris loaded up and taken away, so the yard is clean when we leave.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="steps" class="section section-dark">
+        <div class="container">
+          <h2>How it works.</h2>
+          <ol class="steps" aria-label="How a job works">
+            <li>
+              <span class="step-number" aria-hidden="true">1</span>
+              <h3>Call or text</h3>
+              <p>Tell us what's going on. A photo helps us price it quickly.</p>
+            </li>
+            <li>
+              <span class="step-number" aria-hidden="true">2</span>
+              <h3>Free estimate</h3>
+              <p>You'll know the cost and the timeline before any work starts. Repairs start with a $150 diagnostic, which goes toward the final price.</p>
+            </li>
+            <li>
+              <span class="step-number" aria-hidden="true">3</span>
+              <h3>The work</h3>
+              <p>Our own crew does the job, and we keep you posted along the way.</p>
+            </li>
+            <li>
+              <span class="step-number" aria-hidden="true">4</span>
+              <h3>Clean up</h3>
+              <p>We haul away the mess and walk you through what we did.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section section-alt">
+        <div class="container">
+          <nav class="picker" aria-labelledby="picker-question">
+            <h2 id="picker-question" class="picker-question">Need something else?</h2>
+            <div class="picker-options">
+            <a class="picker-option" href="electrical">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></svg>
+              <span class="picker-name">Electrical</span>
+              <span class="picker-hint">Wiring, lighting and panels</span>
+            </a>
+            <a class="picker-option" href="maintenance">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.7-.7-2.3z" /></svg>
+              <span class="picker-name">Property maintenance</span>
+              <span class="picker-hint">Repairs and rental upkeep</span>
+            </a>
+            <a class="picker-option" href="trees" aria-current="page">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 5 11h3l-4 6h7v5h2v-5h7l-4-6h3z" /></svg>
+              <span class="picker-name">Tree trimming &amp; removal</span>
+              <span class="picker-hint">Pruning, removal and cleanup</span>
+            </a>
+            <a class="picker-option" href="concrete">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5h9v5H2zm11 0h9v5h-9zM2 12h5v5H2zm7 0h6v5H9zm8 0h5v5h-5zM2 19h20v2H2z" /></svg>
+              <span class="picker-name">Concrete</span>
+              <span class="picker-hint">Driveways, patios and repairs</span>
+            </a>
+            <a class="picker-option" href="remodels">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z" /></svg>
+              <span class="picker-name">Home remodels</span>
+              <span class="picker-hint">Kitchens, baths and basements</span>
+            </a>
+            </div>
+          </nav>
+        </div>
+      </section>
+
+      <section id="contact" class="section contact">
+        <div class="container">
+          <h2>Tell us about the job.</h2>
+          <p class="lead">Call, text or email for a free estimate. A photo of the job helps us give you a quick, honest price.</p>
+          <!-- PLACEHOLDER: email -->
+          <div class="contact-grid">
+            <a class="contact-card" href="tel:+17208381503">
+              <span class="contact-label">Call</span>
+              <span class="contact-value">(720) 838-1503</span>
+            </a>
+            <a class="contact-card" href="sms:+17208381503">
+              <span class="contact-label">Text a photo</span>
+              <span class="contact-value">(720) 838-1503</span>
+            </a>
+            <a class="contact-card" href="mailto:info@example.com">
+              <span class="contact-label">Email</span>
+              <span class="contact-value">info@example.com</span>
+            </a>
+            <div class="contact-card">
+              <span class="contact-label">Hours</span>
+              <span class="contact-value">Mon–Fri, 7am–5pm Mountain Time</span>
+              <span class="contact-label">Emergency calls anytime</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <nav class="container footer-map" aria-label="Site map">
+        <div>
+          <h2>Services</h2>
+          <ul>
+            <li><a href="electrical">Electrical</a></li>
+            <li><a href="maintenance">Property maintenance</a></li>
+            <li><a href="trees">Tree trimming &amp; removal</a></li>
+            <li><a href="concrete">Concrete</a></li>
+            <li><a href="remodels">Home remodels</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>About</h2>
+          <ul>
+            <li><a href="./#why">Why E&amp;E</a></li>
+            <li><a href="remodels#steps">How a remodel works</a></li>
+            <li><a href="areas">Service area</a></li>
+            <li><a href="faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Contact</h2>
+          <!-- PLACEHOLDER: email -->
+          <ul>
+            <li><a href="tel:+17208381503">Call (720) 838-1503</a></li>
+            <li><a href="sms:+17208381503">Text a photo</a></li>
+            <li><a href="mailto:info@example.com">info@example.com</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="container footer-inner">
+        <p>© 2026 E&amp;E Electrical &amp; Property Maintenance, Colorado Springs, CO</p>
+        <!-- PLACEHOLDER: real license number -->
+        <p>Colorado electrical license #000000</p>
+      </div>
+    </footer>
+
+    <!-- Phones only: Call and Text stay at the bottom of the screen, in thumb reach.
+         It slides up once the top of the page scrolls away. -->
+    <div class="call-bar" role="region" aria-label="Quick contact">
+      <a class="button" href="tel:+17208381503">Call</a>
+      <a class="button button-ghost" href="sms:+17208381503">Text a photo</a>
+    </div>
+  </body>
+</html>

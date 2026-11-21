@@ -8,3 +8,5 @@
 build/
 build-test/
 build-pages/
+# Brotli copies of the site's text from ./run.sh
+br/

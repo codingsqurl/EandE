@@ -23,7 +23,7 @@ final class FirewallTest {
         test("refusals still carry the security headers and aren't cached", () -> {
             Client.Reply reply = Client.send("POST", "/", Client.freshIp(), "Content-Length: 0");
             equal(Server.CSP, reply.header("Content-Security-Policy"));
-            equal("max-age=31536000", reply.header("Strict-Transport-Security"));
+            equal("max-age=31536000; includeSubDomains", reply.header("Strict-Transport-Security"));
             equal("no-store", reply.header("Cache-Control"));
         });
 
