@@ -63,6 +63,7 @@ public final class Server {
                 "/concrete", "concrete.html",
                 "/remodels", "remodels.html",
                 "/faq", "faq.html",
+                "/privacy", "privacy.html",
                 "/areas", "areas.html");
         for (String town : TOWNS) {
             pages.put("/" + town, town + ".html");
@@ -73,15 +74,23 @@ public final class Server {
     // Only these files are ever served. Everything else in the repo (README, notes,
     // the server's own code) stays private, even if someone guesses its name.
     // The number is how many seconds a browser may keep its copy.
+    // GSAP, which runs the motion (js/motion.js), as downloaded from npm.
+    static final String GSAP = "js/gsap-3.12.5.min.js";
+    static final String SCROLL_TRIGGER = "js/ScrollTrigger-3.12.5.min.js";
+
     static final Map<String, Integer> PUBLIC_FILES = Map.of(
             "favicon.svg", 60 * 60 * 24,    // 1 day
             "logo.webp", 60 * 60 * 24,
             "apple-touch-icon.png", 60 * 60 * 24,
             "og-image.png", 60 * 60 * 24,
             "robots.txt", 60 * 60 * 24,     // 1 day
-            "sitemap.xml", 60 * 60 * 24);   // 1 day
+            "sitemap.xml", 60 * 60 * 24,    // 1 day
+            // GSAP, for the motion. The version is in the name, so a browser may keep it a year.
+            GSAP, 60 * 60 * 24 * 365,
+            SCROLL_TRIGGER, 60 * 60 * 24 * 365);
 
     static final Map<String, String> CONTENT_TYPES = Map.of(
+            "js", "text/javascript; charset=utf-8",
             "svg", "image/svg+xml",
             "png", "image/png",
             "jpg", "image/jpeg",
@@ -91,12 +100,22 @@ public final class Server {
             "css", "text/css; charset=utf-8",
             "html", "text/html; charset=utf-8");
 
-    // The browser's safety rules: only load files from this site, never run scripts,
-    // and never let another site show this one inside a frame.
-    static final String CSP = "default-src 'self'; img-src 'self'; style-src 'self'; script-src 'none'; "
+    // Google Analytics (js/analytics.js, only after a visitor accepts the cookie banner) loads
+    // Google's tag from here, and the tag reports to these addresses.
+    static final String GOOGLE_TAG = "https://www.googletagmanager.com";
+    static final String GOOGLE_REPORTS = "https://*.google-analytics.com https://*.analytics.google.com "
+            + "https://*.googletagmanager.com";
+
+    // The browser's safety rules: only load files from this site, run only this site's own script
+    // files (the motion and analytics, in js/; never code written into a page) plus Google's
+    // analytics tag, and never let another site show this one inside a frame.
+    static final String CSP = "default-src 'self'; img-src 'self' " + GOOGLE_REPORTS + "; style-src 'self'; "
+            + "script-src 'self' " + GOOGLE_TAG + "; connect-src 'self' " + GOOGLE_REPORTS + "; "
             + "object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
     // The 404 page keeps its styles inside itself, so it also needs inline styles allowed.
-    static final String CSP_404 = CSP.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'");
+    // It has no motion or analytics, so it runs no scripts and contacts no one else.
+    static final String CSP_404 = "default-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; "
+            + "script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
     // The areas page and the town pages show a Google map in a frame, so they alone may load frames from google.com.
     static final String CSP_MAPS = CSP + "; frame-src https://www.google.com";
 
@@ -140,6 +159,15 @@ public final class Server {
     static final Path STYLE_CSS = SITE.resolve("style.css");
     static String styleVersion() {
         return sha256(read(STYLE_CSS)).substring(0, 8);
+    }
+
+    // The site's own scripts work the same way: js/motion.js?v=1a2b3c4d.
+    static final List<String> OWN_SCRIPTS = List.of("js/motion.js", "js/analytics.js");
+    static String scriptVersion(String file) {
+        return sha256(read(SITE.resolve(file))).substring(0, 8);
+    }
+    static String motionVersion() {
+        return scriptVersion("js/motion.js");
     }
 
     // With -Deande.quiet=true the server doesn't log each request, so test output stays readable.
@@ -240,6 +268,14 @@ public final class Server {
             send(exchange, 200, read(STYLE_CSS), CONTENT_TYPES.get("css"), Map.of("Cache-Control", cache));
             return 200;
         }
+        if (path.startsWith("/") && OWN_SCRIPTS.contains(path.substring(1))) {
+            String file = path.substring(1);
+            String cache = scriptVersion(file).equals(queryValue(exchange, "v"))
+                    ? "public, max-age=31536000, immutable"
+                    : "public, max-age=600";
+            send(exchange, 200, read(SITE.resolve(file)), CONTENT_TYPES.get("js"), Map.of("Cache-Control", cache));
+            return 200;
+        }
 
         String name = path.substring(1);
         if (PUBLIC_FILES.containsKey(name)) {
@@ -266,6 +302,9 @@ public final class Server {
     static String pageText(String file) {
         String page = new String(read(SITE.resolve(file)), StandardCharsets.UTF_8);
         page = page.replace("href=\"style.css\"", "href=\"style.css?v=" + styleVersion() + "\"");
+        for (String script : OWN_SCRIPTS) {
+            page = page.replace("src=\"" + script + "\"", "src=\"" + script + "?v=" + scriptVersion(script) + "\"");
+        }
         return withAnalytics(page, ANALYTICS_TOKEN);
     }
 
@@ -312,8 +351,8 @@ public final class Server {
         if (token.isEmpty()) {
             return csp;
         }
-        return csp.replace("script-src 'none'",
-                "script-src " + ANALYTICS_SCRIPT + "; connect-src 'self' " + ANALYTICS_REPORTS);
+        return csp.replace("script-src 'self'", "script-src 'self' " + ANALYTICS_SCRIPT)
+                .replace("connect-src 'self'", "connect-src 'self' " + ANALYTICS_REPORTS);
     }
 
     // ---------- Squashing ahead of time ----------
@@ -328,7 +367,8 @@ public final class Server {
         for (String file : PAGES.values()) {
             bodies.add(pageText(file).getBytes(StandardCharsets.UTF_8));
         }
-        for (String file : new String[] {"style.css", "404.html", "favicon.svg", "robots.txt", "sitemap.xml"}) {
+        for (String file : new String[] {"style.css", "404.html", "favicon.svg", "robots.txt", "sitemap.xml",
+                "js/motion.js", "js/analytics.js", GSAP, SCROLL_TRIGGER}) {
             bodies.add(read(SITE.resolve(file)));
         }
         for (byte[] body : bodies) {

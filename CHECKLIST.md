@@ -57,6 +57,16 @@ Do these in order, once the site is live on its real domain. Use the business's 
 - [ ] Grow the web presence (listings, photos, reviews, posts) month by month under the maintenance plan
 - [ ] Bump `<lastmod>` in sitemap.xml when a page changes a lot
 
+## Google Analytics and the cookie banner
+Built and tested, switched off until there's a Measurement ID. Nothing goes to Google until a visitor presses Accept; Decline (or ignoring the banner) means Google's tag never loads. The privacy page (/privacy) explains it, and "Cookie settings" in every footer brings the banner back.
+- [ ] Create the property at analytics.google.com, signed in as the business Gmail (not a personal account): Admin > Create > Property, name "E&E Property Maintenance & Home Improvement, LLC", time zone Mountain (Denver), currency USD
+- [ ] Add a **Web** data stream for the real domain once it's bought. Copy its Measurement ID (G-XXXXXXXXXX)
+- [ ] Paste it into `js/analytics.js`: `var GA_MEASUREMENT_ID = "G-XXXXXXXXXX";`, run `./run.sh test`, deploy
+- [ ] Check Google receives it: open the site, press Accept, then in Analytics go to Reports > Realtime. Your visit shows within a minute. (A visitor who declines never shows, by design)
+- [ ] Optional: Admin > Data retention, set to 14 months; Admin > Data collection, leave Google signals off (it's for ads)
+- [ ] Link Analytics to Search Console (Admin > Product links) so search terms show up in Analytics
+- [ ] If the ID goes on the GitHub Pages test copy too, those preview visits will be counted. Better to add it only for the real site
+
 ## Visitor counts (optional)
 - [ ] Cloudflare Web Analytics: free, no cookies, so no cookie banner. At dash.cloudflare.com > Analytics & Logs > Web Analytics, add the site's domain (choose the manual setup, the site doesn't need Cloudflare DNS). Copy the token from the snippet it shows (the part after `"token": "`), paste it as `ANALYTICS_TOKEN` in fly.toml, then `fly deploy`. Visits show in that dashboard within a few minutes. Locally: `ANALYTICS_TOKEN=... ./run.sh`
 

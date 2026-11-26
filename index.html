@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <!--
   The E&E home page. The server (server/src/eande/Server.java) sends this file and
-  fills in the stylesheet's fingerprint. There's no JavaScript on purpose.
+  fills in the stylesheet's and motion script's fingerprints. The only JavaScript is the motion
+  (GSAP, js/), and the page works fully without it.
 
   Anything marked PLACEHOLDER is made up and must be swapped for the real thing
   before launch. The Docker build refuses to run while any are left.
@@ -20,6 +21,12 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="theme-color" content="#11161d">
     <link rel="stylesheet" href="style.css">
+    <!-- Motion (GSAP). Deferred, so the page shows first; it works fully without them. -->
+    <script defer src="js/gsap-3.12.5.min.js"></script>
+    <script defer src="js/ScrollTrigger-3.12.5.min.js"></script>
+    <script defer src="js/motion.js"></script>
+    <!-- Google Analytics behind a cookie banner. Off until js/analytics.js has a Measurement ID. -->
+    <script defer src="js/analytics.js"></script>
     <link rel="preload" href="logo.webp" as="image" type="image/webp">
 
     <!-- What social apps and texts show when someone shares the link.
@@ -37,7 +44,7 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <!-- Tells Google this is a local business, so it can show up on Maps and in local results.
-         This is data, not a script, so the "no scripts" rule doesn't block it.
+         This is data, not a script, so the "this site's scripts only" rule doesn't block it.
          Keep it matching what the page says: the services, towns and hours below are the same as the page's. -->
     <script type="application/ld+json">
     {
@@ -288,7 +295,7 @@
               <span>Concrete</span>
             </a>
             <a class="nav-service" href="remodels">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="house-wall" d="M5 11.2h5.5V21H5z" /><path class="house-wall" d="M13.5 11.2H19V21h-5.5z" /><path class="house-lintel" d="M10.3 11.2h3.4V15h-3.4z" /><path class="house-roof" d="M12 3 2 11.5h20z" /></svg>
               <span>Home remodels</span>
             </a>
           </div>
@@ -310,7 +317,7 @@
     <main id="main">
 
       <!-- The question bar is the first thing on the page: pick a service and go to its page. -->
-      <section class="hero">
+      <section class="hero hero-intro">
         <div class="container hero-inner">
           <h1>ONE CALL <span class="accent"> Handles it all </span>.</h1>
           <p class="lead">E&amp;E is a licensed electrician and property maintenance crew in Colorado Springs.
@@ -339,7 +346,7 @@
               <span class="picker-hint">Driveways, patios and repairs</span>
             </a>
             <a class="picker-option" href="remodels">
-              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z" /></svg>
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="house-wall" d="M5 11.2h5.5V21H5z" /><path class="house-wall" d="M13.5 11.2H19V21h-5.5z" /><path class="house-lintel" d="M10.3 11.2h3.4V15h-3.4z" /><path class="house-roof" d="M12 3 2 11.5h20z" /></svg>
               <span class="picker-name">Home remodels</span>
               <span class="picker-hint">Kitchens, baths and basements</span>
             </a>
@@ -440,6 +447,9 @@
       <div class="container footer-inner">
         <p>© 2026 E&amp;E Property Maintenance &amp; Home Improvement, LLC. Colorado Springs, CO</p>
         <p>Licensed &amp; insured</p>
+        <p class="footer-legal"><a href="privacy">Privacy</a>
+          <!-- Shown by js/analytics.js only when Google Analytics is switched on. -->
+          <button class="cookie-settings" type="button" hidden>Cookie settings</button></p>
       </div>
     </footer>
 

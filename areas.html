@@ -20,6 +20,12 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="theme-color" content="#11161d">
     <link rel="stylesheet" href="style.css">
+    <!-- Motion (GSAP). Deferred, so the page shows first; it works fully without them. -->
+    <script defer src="js/gsap-3.12.5.min.js"></script>
+    <script defer src="js/ScrollTrigger-3.12.5.min.js"></script>
+    <script defer src="js/motion.js"></script>
+    <!-- Google Analytics behind a cookie banner. Off until js/analytics.js has a Measurement ID. -->
+    <script defer src="js/analytics.js"></script>
     <link rel="preload" href="logo.webp" as="image" type="image/webp">
 
     <meta property="og:type" content="website">
@@ -75,7 +81,7 @@
               <span>Concrete</span>
             </a>
             <a class="nav-service" href="remodels">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="house-wall" d="M5 11.2h5.5V21H5z" /><path class="house-wall" d="M13.5 11.2H19V21h-5.5z" /><path class="house-lintel" d="M10.3 11.2h3.4V15h-3.4z" /><path class="house-roof" d="M12 3 2 11.5h20z" /></svg>
               <span>Home remodels</span>
             </a>
           </div>
@@ -309,6 +315,9 @@
       <div class="container footer-inner">
         <p>© 2026 E&amp;E Property Maintenance &amp; Home Improvement, LLC. Colorado Springs, CO</p>
         <p>Licensed &amp; insured</p>
+        <p class="footer-legal"><a href="privacy">Privacy</a>
+          <!-- Shown by js/analytics.js only when Google Analytics is switched on. -->
+          <button class="cookie-settings" type="button" hidden>Cookie settings</button></p>
       </div>
     </footer>
 

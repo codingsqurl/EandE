@@ -30,10 +30,41 @@ final class ServerTest {
             isTrue(home.text().matches("(?s).*href=\"style\\.css\\?v=[0-9a-f]{8}\".*"), "style.css?v=<8 hex>");
         });
 
-        test("the page has no JavaScript, only the structured data for Google", () -> {
+        test("the only scripts are the deferred motion and analytics files and the structured data for Google", () -> {
             String page = Client.get("/").text();
-            equal(1, page.split("<script", -1).length - 1);
+            equal(5, page.split("<script", -1).length - 1);
+            isTrue(page.matches("(?s).*<script defer src=\"js/analytics\\.js\\?v=[0-9a-f]{8}\"></script>.*"),
+                    "js/analytics.js?v=<8 hex>");
             contains(page, "<script type=\"application/ld+json\">");
+            contains(page, "<script defer src=\"js/gsap-3.12.5.min.js\"></script>");
+            contains(page, "<script defer src=\"js/ScrollTrigger-3.12.5.min.js\"></script>");
+            isTrue(page.matches("(?s).*<script defer src=\"js/motion\\.js\\?v=[0-9a-f]{8}\"></script>.*"),
+                    "js/motion.js?v=<8 hex>");
+        });
+
+        test("every page loads the motion, which only this site's own files may run", () -> {
+            for (String path : Server.PAGES.keySet()) {
+                contains(Client.get(path).text(), "<script defer src=\"js/gsap-3.12.5.min.js\"></script>");
+            }
+            contains(Server.CSP, "script-src 'self' https://www.googletagmanager.com;");
+            lacks(Server.CSP, "unsafe-inline");
+            lacks(Server.CSP, "unsafe-eval");
+            contains(Server.CSP_404, "script-src 'none'");
+            lacks(Server.CSP_404, "google");
+        });
+
+        test("the motion scripts load as JavaScript; GSAP is kept a year, motion.js by its fingerprint", () -> {
+            for (String path : new String[] {"/js/gsap-3.12.5.min.js", "/js/ScrollTrigger-3.12.5.min.js"}) {
+                Client.Reply reply = Client.get(path);
+                equal(200, reply.status());
+                equal("text/javascript; charset=utf-8", reply.header("Content-Type"));
+                equal("public, max-age=31536000", reply.header("Cache-Control"));
+            }
+            equal("public, max-age=31536000, immutable",
+                    Client.get("/js/motion.js?v=" + Server.motionVersion()).header("Cache-Control"));
+            equal("public, max-age=600", Client.get("/js/motion.js").header("Cache-Control"));
+            equal("text/javascript; charset=utf-8", Client.get("/js/motion.js").header("Content-Type"));
+            equal(404, Client.get("/js/other.js").status());
         });
 
         test("every section the menu links to exists", () -> {
@@ -99,11 +130,34 @@ final class ServerTest {
             equal(1, counted.split("<script", -1).length - 1);
 
             String csp = Server.withAnalyticsCsp(Server.CSP_MAPS, token);
-            contains(csp, "script-src https://static.cloudflareinsights.com/beacon.min.js;");
-            contains(csp, "connect-src 'self' https://cloudflareinsights.com");
+            contains(csp, "script-src 'self' https://static.cloudflareinsights.com/beacon.min.js https://www.googletagmanager.com;");
+            contains(csp, "connect-src 'self' https://cloudflareinsights.com https://*.google-analytics.com");
             contains(csp, "frame-src https://www.google.com");
-            lacks(csp, "script-src 'none'");
             lacks(csp, "unsafe-inline");
+        });
+
+        test("Google Analytics is off until js/analytics.js has a Measurement ID, and waits for consent", () -> {
+            String script = new String(java.nio.file.Files.readAllBytes(Server.SITE.resolve("js/analytics.js")),
+                    java.nio.charset.StandardCharsets.UTF_8);
+            contains(script, "var GA_MEASUREMENT_ID = \"\";");
+            contains(script, "ad_storage: \"denied\"");
+            // Google's tag only loads from startAnalytics(), which runs only after Accept or a saved Accept.
+            equal(1, script.split("googletagmanager.com/gtag/js", -1).length - 1);
+            Client.Reply js = Client.get("/js/analytics.js");
+            equal(200, js.status());
+            equal("text/javascript; charset=utf-8", js.header("Content-Type"));
+            equal("public, max-age=31536000, immutable",
+                    Client.get("/js/analytics.js?v=" + Server.scriptVersion("js/analytics.js")).header("Cache-Control"));
+        });
+
+        test("the privacy page explains the analytics, and every footer links to it", () -> {
+            Client.Reply privacy = Client.get("/privacy");
+            equal(200, privacy.status());
+            contains(privacy.text(), "<h1>Privacy.</h1>");
+            contains(privacy.text(), "Google Analytics, only if you accept");
+            contains(privacy.text(), "<link rel=\"canonical\" href=\"https://eande.fly.dev/privacy\">");
+            contains(Client.get("/").text(), "<a href=\"privacy\">Privacy</a>");
+            contains(Client.get("/").text(), "<button class=\"cookie-settings\" type=\"button\" hidden>Cookie settings</button>");
         });
 
         test("no page asks for an email address that doesn't exist yet", () -> {
@@ -131,11 +185,12 @@ final class ServerTest {
             }
         });
 
-        test("a service page marks itself on its question bar and has no JavaScript", () -> {
+        test("a service page marks itself on its question bar and runs only the motion scripts", () -> {
             String page = Client.get("/trees").text();
             contains(page, "<a class=\"picker-option\" href=\"trees\" aria-current=\"page\">");
             equal(1, page.split("aria-current", -1).length - 1);
-            lacks(page, "<script");
+            equal(4, page.split("<script defer src=\"js/", -1).length - 1);
+            equal(4, page.split("<script", -1).length - 1);
         });
 
         test("every page shares the home page's header, contact section, footer and call bar", () -> {

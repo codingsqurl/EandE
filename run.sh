@@ -27,14 +27,19 @@ if [ "$1" = "pages" ]; then
   rm -rf build-pages
   mkdir build-pages
   cp 404.html style.css favicon.svg logo.webp apple-touch-icon.png og-image.png build-pages/
+  cp -R js build-pages/
   # Like the Java server, add the stylesheet's fingerprint to its link, so phones fetch the new
   # styles after every publish instead of reusing a saved copy. GitHub Pages serves
   # electrical.html at /electrical, so the links between pages work there too.
   version="$(shasum style.css | cut -c1-8)"
+  motion="$(shasum js/motion.js | cut -c1-8)"
+  analytics="$(shasum js/analytics.js | cut -c1-8)"
   for page in *.html; do
     [ "$page" = 404.html ] && continue
     awk '{ print } /<meta charset="UTF-8">/ { print "    <meta name=\"robots\" content=\"noindex\">" }' \
-      "$page" | sed "s|href=\"style.css\"|href=\"style.css?v=$version\"|" > "build-pages/$page"
+      "$page" | sed -e "s|href=\"style.css\"|href=\"style.css?v=$version\"|" \
+        -e "s|src=\"js/motion.js\"|src=\"js/motion.js?v=$motion\"|" \
+        -e "s|src=\"js/analytics.js\"|src=\"js/analytics.js?v=$analytics\"|" > "build-pages/$page"
   done
   touch build-pages/.nojekyll
   # The gh-pages branch holds only the latest copy, so it's replaced each time.

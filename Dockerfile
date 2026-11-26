@@ -17,6 +17,7 @@ RUN javac -d classes --release 21 $(find src -name '*.java')
 # Squash the site's text with Brotli now, since Java can't do it while serving.
 RUN apk add --no-cache brotli
 COPY style.css favicon.svg robots.txt sitemap.xml ./
+COPY js/ js/
 # The visitor counter's token (set in fly.toml under [build.args]; empty means off). The
 # pages are squashed with it already in them, so they match what the server sends.
 ARG ANALYTICS_TOKEN=""
@@ -33,6 +34,8 @@ WORKDIR /srv
 COPY --from=build /build/classes/ classes/
 COPY --from=build /build/br/ br/
 COPY *.html style.css favicon.svg logo.webp apple-touch-icon.png og-image.png robots.txt sitemap.xml ./
+# The motion: GSAP and js/motion.js.
+COPY js/ js/
 
 # Run as a regular user rather than root, so a bug in the server can't take over the container.
 RUN adduser -S -H web
