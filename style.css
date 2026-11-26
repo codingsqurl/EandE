@@ -1369,9 +1369,25 @@ main .lead {
   inset: clamp(16px, 3vw, 32px) clamp(16px, 4vw, 32px);
   z-index: -1;
   background: url("logo.webp") center / contain no-repeat;
-  /* js/motion.js turns these up as the home page loads, so the logo lights up. */
+  /* js/motion.js brings the logo in as each page loads: from big, blurred and unseen to
+     sharp, in place and lit. */
   opacity: var(--logo-o, 0.3);
   transform: scale(var(--logo-s, 1));
+  filter: blur(calc(var(--logo-blur, 0) * 1px));
+}
+
+/* Then a band of warm light sweeps across the logo once, cut to the logo's own shape. */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: clamp(16px, 3vw, 32px) clamp(16px, 4vw, 32px);
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 44%, rgba(255, 236, 190, 0.5) 50%, transparent 56%)
+    var(--shine-x, 150%) 0 / 250% 100% no-repeat;
+  -webkit-mask: url("logo.webp") center / contain no-repeat;
+  mask: url("logo.webp") center / contain no-repeat;
+  opacity: var(--shine-o, 0);
+  pointer-events: none;
 }
 
 /* ----- Buttons: a glint of light sweeps across, and they glow on hover ----- */
@@ -1577,11 +1593,11 @@ main .lead {
    js/motion.js (run by GSAP) animates the page: the home hero lighting up, each service's icon
    gesture, the menu, the FAQ, things rising into place on scroll and the phone call bar.
    Everything is visible without it. The one exception: until the script marks the page
-   "motion-on", the home hero's logo and tiles and the phone call bar wait unseen, so they
-   don't show and then jump. If the script never arrives, they appear anyway after 2 seconds.
+   "motion-on", the hero's logo (on every page), the home page's tiles and the phone call bar
+   wait unseen, so they don't show and then jump. If the script never arrives, they appear anyway after 2 seconds.
    Only for browsers that run scripts, and not for people who've asked for less motion. */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  html:not(.motion-on) .hero-intro::before {
+  html:not(.motion-on) .hero::before {
     opacity: 0;
     animation: logo-anyway 0.6s 2s forwards;
   }

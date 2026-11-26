@@ -216,27 +216,35 @@
     });
   }
 
-  // ---------- Home page: the hero lights up and the crew arrives ----------
-  // Until this script adds "motion-on" to the page, the CSS holds back the home hero's logo
-  // and tiles and the phone call bar (see "Motion" in style.css), and shows them anyway after
+  // ---------- Every page: the logo comes in; home page: the crew arrives ----------
+  // Until this script adds "motion-on" to the page, the CSS holds back the hero's logo, the home
+  // page's tiles and the phone call bar (see "Motion" in style.css), and shows them anyway after
   // two seconds if it never comes. Everything below runs in one go, so the page is never
   // drawn between the CSS letting go and GSAP taking over.
-  var intro = document.querySelector(".hero-intro");
-  if (intro) {
-    var tiles = gsap.utils.toArray(".hero-intro .picker-option");
-    var late = performance.now() > 1600;
-    if (calm || late) {
-      // Show everything as it is. Too late to stage an entrance the visitor half saw.
-      gsap.set(intro, { "--logo-o": 0.3 });
-      gsap.set(tiles, { opacity: 1 });
-      root.classList.add("motion-on");
-    } else {
-      gsap.set(intro, { "--logo-o": 0, "--logo-s": 1.06 });
-      gsap.set(tiles, { opacity: 0, y: 26, scale: 0.96, transition: "none" });
-      root.classList.add("motion-on");
+  var hero = document.querySelector(".hero");
+  var intro = hero && hero.classList.contains("hero-intro") ? hero : null;
+  var tiles = intro ? gsap.utils.toArray(".hero-intro .picker-option") : [];
+  var late = performance.now() > 1600;
+  if (!hero || calm || late) {
+    // Show everything as it is. Too late to stage an entrance the visitor half saw.
+    gsap.set(tiles, { opacity: 1 });
+    root.classList.add("motion-on");
+  } else {
+    // The logo starts too big, blurred and unseen, then sharpens and settles into place.
+    gsap.set(hero, { "--logo-o": 0, "--logo-s": 1.14, "--logo-blur": 10 });
+    gsap.set(tiles, { opacity: 0, y: 26, scale: 0.96, transition: "none" });
+    root.classList.add("motion-on");
 
-      var show = gsap.timeline({ defaults: { ease: arrive } });
-      show.to(intro, { "--logo-o": 0.3, "--logo-s": 1, duration: 0.9, ease: "power2.out" }, 0);
+    var show = gsap.timeline({ defaults: { ease: arrive } });
+    show
+      .to(hero, { "--logo-o": 0.3, "--logo-s": 1, "--logo-blur": 0, duration: 1.1, ease: "power3.out" }, 0)
+      // Once it's in, one sweep of light across it.
+      // (At 250% wide, 90% puts the band just off the logo's left edge and 10% just off its right.)
+      .fromTo(hero, { "--shine-x": "90%", "--shine-o": 1 },
+        { "--shine-x": "10%", duration: 1, ease: "power1.inOut", immediateRender: false }, 0.9)
+      .set(hero, { "--shine-o": 0 });
+
+    if (intro) {
       tiles.forEach(function (tile, index) {
         var at = 0.15 + index * 0.09;
         show.to(tile, {
@@ -251,8 +259,6 @@
       });
       show.from(".hero-intro .hero-call", { opacity: 0, y: 10, duration: 0.6, clearProps: "transform" }, 0.45);
     }
-  } else {
-    root.classList.add("motion-on");
   }
 
   // ---------- The menu: items drop in when it opens ----------

@@ -219,7 +219,11 @@ final class ServerTest {
         test("the logo is the hero's background on every page, and nowhere else", () -> {
             String css = Client.get("/style.css").text();
             contains(between(css, ".hero::before {", "}"), "background: url(\"logo.webp\")");
-            equal(1, css.split(java.util.regex.Pattern.quote("url(\"logo.webp\")"), -1).length - 1);
+            // Used three times, all in the hero: the background, and the light that sweeps across
+            // it, cut to the logo's shape (mask and its -webkit- twin).
+            equal(3, css.split(java.util.regex.Pattern.quote("url(\"logo.webp\")"), -1).length - 1);
+            String shine = between(css, ".hero::after {", "}");
+            equal(2, shine.split(java.util.regex.Pattern.quote("url(\"logo.webp\")"), -1).length - 1);
             for (String path : Server.PAGES.keySet()) {
                 String page = Client.get(path).text();
                 contains(page, "<section class=\"hero");
