@@ -25,6 +25,8 @@
     <script defer src="js/motion.js"></script>
     <!-- Google Analytics behind a cookie banner. Off until js/analytics.js has a Measurement ID. -->
     <script defer src="js/analytics.js"></script>
+    <!-- Reminders to call or text: a once-a-visit card and a wiggle on the Call buttons. -->
+    <script defer src="js/nudge.js"></script>
     <link rel="preload" href="logo.webp" as="image" type="image/webp">
 
     <meta property="og:type" content="website">
@@ -73,11 +75,11 @@
               <span>Property maintenance</span>
             </a>
             <a class="nav-service" href="trees">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 5 11h3l-4 6h7v5h2v-5h7l-4-6h3z" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="tree-pole" d="M11 5h2v17h-2z" /><path class="tree-low tree-left" d="M8.27 10.6 4 17h8v-6.4z" /><path class="tree-low tree-right" d="M12 10.6V17h8l-4.27-6.4z" /><path class="tree-high tree-left" d="M8.89 6 5 11h7V6z" /><path class="tree-high tree-right" d="M12 6v5h7l-3.89-5z" /><path class="tree-top" d="M12 2 8.73 6.2h6.54z" /></svg>
               <span>Tree trimming &amp; removal</span>
             </a>
             <a class="nav-service" href="concrete">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5h9v5H2zm11 0h9v5h-9zM2 12h5v5H2zm7 0h6v5H9zm8 0h5v5h-5zM2 19h20v2H2z" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="wall-footing" d="M2 19h20v2H2z" /><path class="wall-brick" d="M2 12h5v5H2z" /><path class="wall-brick" d="M9 12h6v5H9z" /><path class="wall-brick" d="M17 12h5v5h-5z" /><path class="wall-brick" d="M2 5h9v5H2z" /><path class="wall-brick" d="M13 5h9v5h-9z" /></svg>
               <span>Concrete</span>
             </a>
             <a class="nav-service" href="remodels">
@@ -122,6 +124,7 @@
           <iframe class="map-frame" src="https://www.google.com/maps?q=Englewood%2C+CO&amp;output=embed"
             title="Map of Englewood, Colorado" loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <p class="nudge">Got a job in Englewood? <a href="tel:+17208381503">Call</a> or <a href="sms:+17208381503">text a photo</a> to (720)&nbsp;838-1503.</p>
         </div>
       </section>
 
@@ -141,12 +144,12 @@
               <span class="picker-hint">Repairs and rental upkeep</span>
             </a>
             <a class="picker-option" href="trees">
-              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 5 11h3l-4 6h7v5h2v-5h7l-4-6h3z" /></svg>
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="tree-pole" d="M11 5h2v17h-2z" /><path class="tree-low tree-left" d="M8.27 10.6 4 17h8v-6.4z" /><path class="tree-low tree-right" d="M12 10.6V17h8l-4.27-6.4z" /><path class="tree-high tree-left" d="M8.89 6 5 11h7V6z" /><path class="tree-high tree-right" d="M12 6v5h7l-3.89-5z" /><path class="tree-top" d="M12 2 8.73 6.2h6.54z" /></svg>
               <span class="picker-name">Tree trimming &amp; removal</span>
               <span class="picker-hint">Pruning, removal and cleanup</span>
             </a>
             <a class="picker-option" href="concrete">
-              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5h9v5H2zm11 0h9v5h-9zM2 12h5v5H2zm7 0h6v5H9zm8 0h5v5h-5zM2 19h20v2H2z" /></svg>
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="wall-footing" d="M2 19h20v2H2z" /><path class="wall-brick" d="M2 12h5v5H2z" /><path class="wall-brick" d="M9 12h6v5H9z" /><path class="wall-brick" d="M17 12h5v5h-5z" /><path class="wall-brick" d="M2 5h9v5H2z" /><path class="wall-brick" d="M13 5h9v5h-9z" /></svg>
               <span class="picker-name">Concrete</span>
               <span class="picker-hint">Driveways, patios and repairs</span>
             </a>
@@ -217,7 +220,7 @@
         <p>© 2026 E&amp;E Property Maintenance &amp; Home Improvement, LLC. Colorado Springs, CO</p>
         <p>Licensed &amp; insured</p>
         <p class="footer-legal"><a href="privacy">Privacy</a>
-          <!-- Shown by js/analytics.js only when Google Analytics is switched on. -->
+          <!-- Shown by js/analytics.js, which brings the cookie banner back. -->
           <button class="cookie-settings" type="button" hidden>Cookie settings</button></p>
       </div>
     </footer>

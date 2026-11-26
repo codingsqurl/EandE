@@ -37,11 +37,17 @@
   // hover and keyboard focus. A gesture already playing finishes before it can start again.
   var gestures = {
     electrical: function (icon) {
+      // The bolt strikes from the ground up: it's drawn in from its bottom tip to the top,
+      // speeding up as it climbs, then flashes once and settles. immediateRender: false keeps
+      // the bolt whole until the strike actually plays.
       return gsap.timeline({ paused: true })
-        .to(icon, { scale: 1.28, rotation: -10, duration: 0.12, ease: "power2.out" })
-        .to(icon, { scale: 0.94, rotation: 7, duration: 0.1, ease: "power1.inOut" })
-        .to(icon, { scale: 1.12, rotation: -3, duration: 0.1, ease: "power1.inOut" })
-        .to(icon, { scale: 1, rotation: 0, duration: 0.35, ease: "power3.out" });
+        .fromTo(icon,
+          { clipPath: "inset(100% 0% 0% 0%)" },
+          { clipPath: "inset(0% 0% 0% 0%)", duration: 0.24, ease: "power2.in", immediateRender: false })
+        .to(icon, { scale: 1.22, duration: 0.07, ease: "power2.out" })
+        .to(icon, { opacity: 0.55, duration: 0.05, ease: "none", yoyo: true, repeat: 1 }, "<")
+        .to(icon, { scale: 1, duration: 0.3, ease: "power3.out" })
+        .set(icon, { clearProps: "clipPath" });
     },
     maintenance: function (icon) {
       // Turns around the wrench's head, like tightening a bolt.
@@ -52,22 +58,75 @@
         .to(icon, { rotation: 0, duration: 0.35, ease: "power3.out" });
     },
     trees: function (icon) {
-      // Sways from the trunk.
-      gsap.set(icon, { transformOrigin: "50% 100%" });
-      return gsap.timeline({ paused: true, defaults: { ease: "sine.inOut" } })
-        .to(icon, { rotation: 11, duration: 0.2 })
-        .to(icon, { rotation: -8, duration: 0.24 })
-        .to(icon, { rotation: 4, duration: 0.2 })
-        .to(icon, { rotation: 0, duration: 0.22 });
+      // A little tree removal: the branches are stripped from the bottom up, the top is
+      // lowered down the trunk, the bare pole timbers over, and a fresh tree grows back.
+      // (The icon is drawn in those parts in the HTML, and looks whole without this.)
+      var lowLeft = icon.querySelector(".tree-low.tree-left");
+      var lowRight = icon.querySelector(".tree-low.tree-right");
+      var highLeft = icon.querySelector(".tree-high.tree-left");
+      var highRight = icon.querySelector(".tree-high.tree-right");
+      var top = icon.querySelector(".tree-top");
+      var pole = icon.querySelector(".tree-pole");
+      var removal = gsap.timeline({ paused: true });
+      if (!lowLeft || !lowRight || !highLeft || !highRight || !top || !pole) {
+        return removal;
+      }
+      var parts = [lowLeft, lowRight, highLeft, highRight, top, pole];
+
+      /** One side of a layer of branches, cut and dropping away from the trunk. */
+      function strip(branch, side, at) {
+        removal.to(branch, {
+          x: 3.5 * side, y: 4, rotation: 35 * side, opacity: 0,
+          svgOrigin: "12 " + (branch.classList.contains("tree-low") ? "17" : "11"),
+          duration: 0.3, ease: "power2.in"
+        }, at);
+      }
+
+      strip(lowLeft, -1, 0);
+      strip(lowRight, 1, 0.06);
+      strip(highLeft, -1, 0.28);
+      strip(highRight, 1, 0.34);
+      removal
+        // The top is lowered down the pole, like it's on a rope, and set on the ground.
+        .to(top, { y: 13, duration: 0.42, ease: "sine.inOut" }, 0.6)
+        .to(top, { opacity: 0, duration: 0.12 }, 0.96)
+        // Timber! The bare pole falls over from its base and lands.
+        .to(pole, { rotation: 88, svgOrigin: "12 22", duration: 0.36, ease: "power2.in" }, 1.04)
+        .to(pole, { rotation: 82, svgOrigin: "12 22", duration: 0.08, ease: "power1.out" }, 1.4)
+        .to(pole, { opacity: 0, duration: 0.14 }, 1.44)
+        // A new tree grows back from the ground.
+        .set(parts, { clearProps: "transform,opacity" }, 1.58)
+        .fromTo(icon,
+          { scale: 0, transformOrigin: "50% 100%" },
+          { scale: 1, duration: 0.38, ease: "back.out(1.6)", immediateRender: false }, 1.58);
+      return removal;
     },
     concrete: function (icon) {
-      // Lifts and lands with a squash, like a slab dropping into place.
-      gsap.set(icon, { transformOrigin: "50% 100%" });
-      return gsap.timeline({ paused: true })
-        .to(icon, { y: -7, duration: 0.16, ease: "power2.out" })
-        .to(icon, { y: 0, duration: 0.14, ease: "power2.in" })
-        .to(icon, { scaleY: 0.78, scaleX: 1.14, duration: 0.07, ease: "power1.out" })
-        .to(icon, { scaleY: 1, scaleX: 1, duration: 0.4, ease: "power3.out" });
+      // The wall goes up: the footing pours in from the left, then each block drops onto it
+      // one by one, the bottom row left to right, then the top row, landing with a little
+      // squash. (The icon is drawn as the footing and five blocks in the HTML, bottom row
+      // first, and looks whole without this.)
+      var footing = icon.querySelector(".wall-footing");
+      var bricks = gsap.utils.toArray(icon.querySelectorAll(".wall-brick"));
+      var wall = gsap.timeline({ paused: true });
+      if (!footing || bricks.length !== 5) {
+        return wall;
+      }
+      // Everything starts out of place. immediateRender: false keeps the wall whole until
+      // the build actually plays.
+      wall
+        .set(footing, { scaleX: 0, svgOrigin: "2 21", immediateRender: false }, 0)
+        .set(bricks, { y: -7, opacity: 0, immediateRender: false }, 0)
+        .to(footing, { scaleX: 1, svgOrigin: "2 21", duration: 0.3, ease: "power3.out" }, 0);
+      bricks.forEach(function (brick, index) {
+        var at = 0.24 + index * 0.13;
+        wall
+          .to(brick, { opacity: 1, duration: 0.08 }, at)
+          .to(brick, { y: 0, duration: 0.2, ease: "power2.in" }, at)
+          .to(brick, { scaleY: 0.8, scaleX: 1.06, transformOrigin: "50% 100%", duration: 0.05, ease: "power1.out" }, at + 0.2)
+          .to(brick, { scaleY: 1, scaleX: 1, duration: 0.16, ease: "power2.out" }, at + 0.25);
+      });
+      return wall.set(bricks.concat(footing), { clearProps: "transform,opacity" });
     },
     remodels: function (icon) {
       // The house goes up piece by piece: the two walls rise from the ground, the beam over
@@ -87,12 +146,13 @@
         .set(walls, { scaleY: 0, transformOrigin: "50% 100%", immediateRender: false }, 0)
         .set(lintel, { y: -5, opacity: 0, immediateRender: false }, 0)
         .set(roof, { y: -9, opacity: 0, immediateRender: false }, 0)
-        .to(walls, { scaleY: 1, duration: 0.26, ease: "power3.out", stagger: 0.09 }, 0)
-        .to(lintel, { y: 0, opacity: 1, duration: 0.18, ease: "power2.out" }, 0.24)
-        .to(roof, { opacity: 1, duration: 0.08 }, 0.38)
-        .to(roof, { y: 0, duration: 0.24, ease: "power2.in" }, 0.38)
-        .to(icon, { scaleY: 0.88, scaleX: 1.07, duration: 0.06, ease: "power1.out" }, 0.62)
-        .to(icon, { scaleY: 1, scaleX: 1, duration: 0.3, ease: "power3.out" }, 0.68);
+        // About 1.7 seconds in all, slow enough to watch each piece go on.
+        .to(walls, { scaleY: 1, duration: 0.45, ease: "power3.out", stagger: 0.18 }, 0)
+        .to(lintel, { y: 0, opacity: 1, duration: 0.3, ease: "power2.out" }, 0.5)
+        .to(roof, { opacity: 1, duration: 0.12 }, 0.78)
+        .to(roof, { y: 0, duration: 0.4, ease: "power2.in" }, 0.78)
+        .to(icon, { scaleY: 0.88, scaleX: 1.07, duration: 0.08, ease: "power1.out" }, 1.18)
+        .to(icon, { scaleY: 1, scaleX: 1, duration: 0.45, ease: "power3.out" }, 1.26);
       return build;
     }
   };

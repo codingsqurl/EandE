@@ -34,12 +34,14 @@ if [ "$1" = "pages" ]; then
   version="$(shasum style.css | cut -c1-8)"
   motion="$(shasum js/motion.js | cut -c1-8)"
   analytics="$(shasum js/analytics.js | cut -c1-8)"
+  nudge="$(shasum js/nudge.js | cut -c1-8)"
   for page in *.html; do
     [ "$page" = 404.html ] && continue
     awk '{ print } /<meta charset="UTF-8">/ { print "    <meta name=\"robots\" content=\"noindex\">" }' \
       "$page" | sed -e "s|href=\"style.css\"|href=\"style.css?v=$version\"|" \
         -e "s|src=\"js/motion.js\"|src=\"js/motion.js?v=$motion\"|" \
-        -e "s|src=\"js/analytics.js\"|src=\"js/analytics.js?v=$analytics\"|" > "build-pages/$page"
+        -e "s|src=\"js/analytics.js\"|src=\"js/analytics.js?v=$analytics\"|" \
+        -e "s|src=\"js/nudge.js\"|src=\"js/nudge.js?v=$nudge\"|" > "build-pages/$page"
   done
   touch build-pages/.nojekyll
   # The gh-pages branch holds only the latest copy, so it's replaced each time.

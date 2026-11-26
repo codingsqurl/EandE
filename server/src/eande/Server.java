@@ -162,7 +162,7 @@ public final class Server {
     }
 
     // The site's own scripts work the same way: js/motion.js?v=1a2b3c4d.
-    static final List<String> OWN_SCRIPTS = List.of("js/motion.js", "js/analytics.js");
+    static final List<String> OWN_SCRIPTS = List.of("js/motion.js", "js/analytics.js", "js/nudge.js");
     static String scriptVersion(String file) {
         return sha256(read(SITE.resolve(file))).substring(0, 8);
     }
@@ -368,7 +368,7 @@ public final class Server {
             bodies.add(pageText(file).getBytes(StandardCharsets.UTF_8));
         }
         for (String file : new String[] {"style.css", "404.html", "favicon.svg", "robots.txt", "sitemap.xml",
-                "js/motion.js", "js/analytics.js", GSAP, SCROLL_TRIGGER}) {
+                "js/motion.js", "js/analytics.js", "js/nudge.js", GSAP, SCROLL_TRIGGER}) {
             bodies.add(read(SITE.resolve(file)));
         }
         for (byte[] body : bodies) {

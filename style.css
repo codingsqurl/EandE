@@ -1115,6 +1115,123 @@ a {
   text-underline-offset: 3px;
 }
 
+/* ---------- Call and text nudges ----------
+   A quiet line after a section ("See your job here? Call or text a photo..."), so a way to
+   reach E&E is never more than a scroll away. Muted text, with the links in full colour and
+   an amber underline. */
+.nudge {
+  max-width: 60ch;
+  margin: 28px auto 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.nudge a {
+  color: var(--text);
+  font-weight: 700;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.nudge a:hover {
+  color: var(--accent);
+}
+
+/* On the dark sections. */
+.contact .nudge,
+.section-dark .nudge,
+.hero .nudge {
+  color: var(--muted-on-ink);
+}
+
+.contact .nudge a,
+.section-dark .nudge a,
+.hero .nudge a {
+  color: var(--text-on-ink);
+}
+
+#area .nudge {
+  margin-top: 18px;
+}
+
+/* The card js/nudge.js slides up once a visit: text us a photo for a ballpark. Bottom right on
+   big screens; on phones, full width above the Call / Text bar. */
+.nudge-card {
+  position: fixed;
+  z-index: 45;
+  right: 24px;
+  bottom: 24px;
+  width: min(340px, calc(100vw - 32px));
+  padding: 18px 18px 16px;
+  background-color: rgba(26, 33, 43, 0.94);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid var(--ink-line);
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+  color: var(--text-on-ink);
+  text-align: left;
+}
+
+.nudge-card-text {
+  margin: 0 28px 14px 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted-on-ink);
+}
+
+.nudge-card-text strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--text-on-ink);
+  font-size: 1.02rem;
+}
+
+.nudge-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.nudge-card-actions .button {
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.nudge-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  color: var(--muted-on-ink);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nudge-close:hover {
+  color: var(--text-on-ink);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 680px) {
+  .nudge-card {
+    left: 16px;
+    right: 16px;
+    width: auto;
+    bottom: calc(82px + env(safe-area-inset-bottom));
+  }
+}
+
 /* ---------- Cookie banner ----------
    js/analytics.js adds it at the bottom of the screen when Google Analytics is switched on and
    the visitor hasn't chosen yet. Same frosted glass as the header. On phones it sits above the

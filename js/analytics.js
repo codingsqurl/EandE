@@ -1,11 +1,11 @@
 /*
   Google Analytics, behind a cookie banner.
 
-  To switch it on, paste the site's Google Analytics 4 Measurement ID below (it looks like
-  "G-XXXXXXXXXX": analytics.google.com > Admin > Data streams > the web stream). Leave it
-  empty and nothing here runs: no banner, no Google, no cookies.
+  To switch Google on, paste the site's Google Analytics 4 Measurement ID below (it looks like
+  "G-XXXXXXXXXX": analytics.google.com > Admin > Data streams > the web stream). Until then the
+  banner still shows and remembers each visitor's choice, but nothing loads and nothing is
+  sent anywhere; visitors who accepted start being counted as soon as the ID is added.
 
-  With an ID:
   - A visitor who hasn't chosen yet sees a small banner: Accept or Decline.
   - Nothing goes to Google until they press Accept. Only then does Google's tag load, with
     consent for analytics only (never ads or ad personalisation), and it counts their visits.
@@ -22,9 +22,8 @@
 
   var STORE_KEY = "eande-consent";
   var id = GA_MEASUREMENT_ID.trim();
-  if (!/^G-[A-Z0-9]{4,}$/.test(id)) {
-    return;
-  }
+  // Without a valid ID the banner works the same, but Google's tag never loads.
+  var hasId = /^G-[A-Z0-9]{4,}$/.test(id);
 
   // ---------- Remembering the choice ----------
   // Some browsers (private windows, blocked site data) refuse storage. Then the banner just
@@ -53,6 +52,9 @@
 
   var loaded = false;
   function startAnalytics() {
+    if (!hasId) {
+      return;
+    }
     if (loaded) {
       gtag("consent", "update", { analytics_storage: "granted" });
       return;
@@ -158,7 +160,7 @@
     showBanner();
   }
 
-  // The footer's "Cookie settings" button, hidden on pages until analytics is switched on.
+  // The footer's "Cookie settings" button, hidden on pages until this script runs.
   document.querySelectorAll(".cookie-settings").forEach(function (button) {
     button.hidden = false;
     button.addEventListener("click", showBanner);

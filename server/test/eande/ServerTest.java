@@ -32,7 +32,8 @@ final class ServerTest {
 
         test("the only scripts are the deferred motion and analytics files and the structured data for Google", () -> {
             String page = Client.get("/").text();
-            equal(5, page.split("<script", -1).length - 1);
+            equal(6, page.split("<script", -1).length - 1);
+            contains(page, "<script defer src=\"js/nudge.js?v=");
             isTrue(page.matches("(?s).*<script defer src=\"js/analytics\\.js\\?v=[0-9a-f]{8}\"></script>.*"),
                     "js/analytics.js?v=<8 hex>");
             contains(page, "<script type=\"application/ld+json\">");
@@ -160,6 +161,15 @@ final class ServerTest {
             contains(Client.get("/").text(), "<button class=\"cookie-settings\" type=\"button\" hidden>Cookie settings</button>");
         });
 
+        test("the home, service, town, FAQ and areas pages each nudge visitors to call or text", () -> {
+            for (String path : new String[] {"/", "/electrical", "/remodels", "/aspen", "/denver", "/faq", "/areas"}) {
+                String page = Client.get(path).text();
+                contains(page, "nudge");
+                contains(between(page, "<main", "<section id=\"contact\""), "<a href=\"tel:+17208381503\">Call</a>");
+            }
+            contains(Client.get("/aspen").text(), "Got a job in Aspen?");
+        });
+
         test("no page asks for an email address that doesn't exist yet", () -> {
             for (String path : Server.PAGES.keySet()) {
                 lacks(Client.get(path).text(), "example.com");
@@ -189,8 +199,8 @@ final class ServerTest {
             String page = Client.get("/trees").text();
             contains(page, "<a class=\"picker-option\" href=\"trees\" aria-current=\"page\">");
             equal(1, page.split("aria-current", -1).length - 1);
-            equal(4, page.split("<script defer src=\"js/", -1).length - 1);
-            equal(4, page.split("<script", -1).length - 1);
+            equal(5, page.split("<script defer src=\"js/", -1).length - 1);
+            equal(5, page.split("<script", -1).length - 1);
         });
 
         test("every page shares the home page's header, contact section, footer and call bar", () -> {
