@@ -261,6 +261,22 @@
     }
   }
 
+  // ---------- Every page: the header's contents drop in ----------
+  // The name, Call now and the menu button drop in one after another, and a gold line draws
+  // across under the header and fades. The bar itself stays put: moving it would uncover the
+  // light page background behind it for a moment. Runs in the same go as the logo above,
+  // before the page is drawn, so the CSS hold-back hands straight over.
+  var header = document.querySelector(".site-header");
+  if (header && !calm && !late) {
+    var headerBits = header.querySelectorAll(".brand, .header-inner > .button-small, .menu-button");
+    gsap.set(headerBits, { opacity: 0, y: -22, transition: "none" });
+    gsap.timeline({ defaults: { ease: arrive } })
+      .to(headerBits, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, clearProps: "transform,opacity,transition" }, 0.05)
+      .fromTo(header, { "--line-s": 0, "--line-o": 1 },
+        { "--line-s": 1, duration: 0.7, ease: "power2.inOut", immediateRender: false }, 0.25)
+      .to(header, { "--line-o": 0, duration: 0.7, ease: "power1.out" }, 1.05);
+  }
+
   // ---------- The menu: items drop in when it opens ----------
   // The panel itself fades and drops in through CSS (@starting-style in style.css). Tweening the
   // popover element from script makes Chrome close it again, so GSAP only moves what's inside.
