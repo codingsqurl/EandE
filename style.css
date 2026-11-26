@@ -539,6 +539,11 @@ a {
   transform: translateY(-2px);
 }
 
+/* The nut the wrench tightens in js/motion.js. It's only seen while that plays. */
+.wrench-nut {
+  opacity: 0;
+}
+
 .picker-icon {
   width: 34px;
   height: 34px;

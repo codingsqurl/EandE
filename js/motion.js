@@ -50,12 +50,31 @@
         .set(icon, { clearProps: "clipPath" });
     },
     maintenance: function (icon) {
-      // Turns around the wrench's head, like tightening a bolt.
-      gsap.set(icon, { transformOrigin: "62% 38%" });
-      return gsap.timeline({ paused: true })
-        .to(icon, { rotation: -42, duration: 0.25, ease: "power2.inOut" })
-        .to(icon, { rotation: 12, duration: 0.2, ease: "power2.inOut" })
-        .to(icon, { rotation: 0, duration: 0.35, ease: "power3.out" });
+      // The wrench tightens a nut: a nut pops into its jaw, the wrench ratchets it three
+      // clicks (turning together, then the wrench snaps back while the nut stays put), the
+      // nut pulses tight and vanishes, and the wrench twirls once like a tool being flipped.
+      // (The nut is in the HTML, hidden by the CSS until this plays.)
+      var wrench = icon.querySelector(".wrench");
+      var nut = icon.querySelector(".wrench-nut");
+      var job = gsap.timeline({ paused: true });
+      if (!wrench || !nut) {
+        return job;
+      }
+      var jaw = "14.6 9.4";
+      job.fromTo(nut,
+        { scale: 0, opacity: 0, svgOrigin: jaw },
+        { scale: 1, opacity: 1, svgOrigin: jaw, duration: 0.22, ease: "back.out(2)", immediateRender: false }, 0);
+      [0, 1, 2].forEach(function (click) {
+        var at = 0.26 + click * 0.26;
+        job
+          .to([wrench, nut], { rotation: "-=30", svgOrigin: jaw, duration: 0.16, ease: "power2.inOut" }, at)
+          .to(wrench, { rotation: "+=30", svgOrigin: jaw, duration: 0.08, ease: "power1.out" }, at + 0.17);
+      });
+      return job
+        .to(nut, { scale: 1.3, svgOrigin: jaw, duration: 0.08, ease: "power2.out" }, 1.06)
+        .to(nut, { scale: 0.4, opacity: 0, svgOrigin: jaw, duration: 0.2, ease: "power2.in" }, 1.14)
+        .to(wrench, { rotation: -360, svgOrigin: "12 12", duration: 0.5, ease: "power2.inOut" }, 1.12)
+        .set([wrench, nut], { clearProps: "transform,opacity" });
     },
     trees: function (icon) {
       // A little tree removal: the branches are stripped from the bottom up, the top is
