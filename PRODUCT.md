@@ -7,28 +7,30 @@
 web
 
 ## Users
-- Homeowners in Colorado Springs, El Paso County and the mountain towns west to Aspen who need something fixed, built or cleared, often looking it up on a phone while standing in front of the problem.
+- Homeowners in Colorado Springs, El Paso County, the I-25 corridor up to Denver and the mountain towns west to Aspen who need something fixed, built or cleared, often looking it up on a phone while standing in front of the problem.
 - Landlords and property managers who want one contractor across several properties (rental turnovers, make-readies, ongoing upkeep).
 - Small businesses are claimed on the electrical page; unconfirmed with the owner.
 
 ## Product Purpose
-The website for E&E Property Maintenance & Home Improvement, LLC. It exists to get a visitor to call or text for a free estimate, and to make clear that one local crew handles the whole property. Success is a call, a text with a photo of the job, or an email.
+The website for E&E Property Maintenance & Home Improvement, LLC. It exists to get a visitor to call or text for a free estimate, and to make clear that one local crew handles the whole property. Success is a call or a text with a photo of the job.
 
 ## Positioning
 One crew for the whole property, from the Springs up into the mountains. The logo's tagline is "Mountain Calls": E&E takes jobs in the mountain towns between Colorado Springs and Aspen that city contractors often won't drive to. Electrical work is one service among five, not the lead.
 
 ## Operating Context
 - Visitors arrive from Google search, Google Maps and shared links, mostly on phones.
-- The main actions are phone calls and texts to (720) 838-1503; email once the business address exists.
+- The main actions are phone calls and texts to (720) 838-1503; email goes on once the business address exists.
 - Hours are Monday to Friday, 7am to 5pm Mountain Time, with emergency calls anytime.
 - Estimates are free. Repairs start with a $150 diagnostic that goes toward the final price.
 
 ## Capabilities and Constraints
 - Services: property maintenance, electrical, tree trimming & removal, concrete, home remodels. Remodel copy must not imply electrical work is included.
-- Service area: Colorado Springs, all of El Paso County, and the mountain towns to Aspen. Each town has its own page with a Google map; the exact mountain-town list is unconfirmed.
+- Service area: Colorado Springs, all of El Paso County, the I-25 corridor up to Denver, and the mountain towns to Aspen. Each town has its own page with a Google map; the El Paso County and Denver-side lists are confirmed; the mountain-town list is not.
 - Plain HTML and CSS with no JavaScript, served by a JDK-only Java server with a strict Content Security Policy. Google map frames are allowed only on the areas and town pages.
 - Hosted on Fly.io (Denver). The deploy refuses to build while any page still contains PLACEHOLDER.
-- Open: email address, electrical license number, the final town list, and the drafted service descriptions and FAQ answers.
+- Open: email address, the mountain-town list and the drafted service descriptions.
+- No license number on the site (owner's decision); "Licensed & insured" is confirmed and shown instead.
+- Not paid yet, so not live. The site's web presence (photos, reviews, listings) grows month by month under a maintenance plan; Google reviews are being collected now.
 
 ## Brand Commitments
 - Name: "E&E Property Maintenance & Home Improvement, LLC", used everywhere (decided over "E&E Electrical & Property Maintenance").

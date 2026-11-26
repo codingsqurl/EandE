@@ -9,6 +9,12 @@ primary_region = "den"
 # [env]
 #   ALLOWED_HOSTS = "example.com,www.example.com"
 
+# Visitor counts, from Cloudflare Web Analytics (free, no cookies, so no cookie banner).
+# Paste the site's token from dash.cloudflare.com > Analytics & Logs > Web Analytics, then
+# fly deploy. Empty means off. The token shows in every page, so it isn't a secret.
+[build.args]
+  ANALYTICS_TOKEN = ""
+
 [http_service]
   internal_port = 8080
   # Send every http:// visit to https://.

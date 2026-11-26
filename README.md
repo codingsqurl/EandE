@@ -1,4 +1,4 @@
-# E&E Electrical & Property Maintenance
+# E&E Property Maintenance & Home Improvement, LLC
 
 Website for E&E, an electrical and property maintenance company in Colorado Springs.
 

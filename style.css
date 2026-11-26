@@ -648,6 +648,11 @@ a {
   margin-top: 24px;
 }
 
+/* With an odd number of cards, the last one (hours) spans the row instead of leaving a gap. */
+.contact-grid > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 680px) {
   .service-columns,
   .steps,
@@ -751,9 +756,16 @@ a {
   background-color: var(--paper-2);
 }
 
+/* Kept short so it never fills the screen. A finger on the map moves the map, not the page,
+   so a tall map traps scrolling; on a phone it's a short strip with plenty of page around it. */
+.map-frame {
+  max-height: 460px;
+}
+
 @media (max-width: 680px) {
   .map-frame {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: auto;
+    height: 220px;
   }
 }
 

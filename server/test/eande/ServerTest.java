@@ -26,7 +26,7 @@ final class ServerTest {
             Client.Reply home = Client.get("/");
             equal(200, home.status());
             equal("text/html; charset=utf-8", home.header("Content-Type"));
-            contains(home.text(), "<title>E&amp;E Electrical &amp; Property Maintenance");
+            contains(home.text(), "<title>E&amp;E Property Maintenance &amp; Home Improvement, LLC");
             isTrue(home.text().matches("(?s).*href=\"style\\.css\\?v=[0-9a-f]{8}\".*"), "style.css?v=<8 hex>");
         });
 
@@ -80,6 +80,36 @@ final class ServerTest {
             }
             isTrue(Server.showsMap("areas.html") && Server.showsMap("aspen.html"), "map pages");
             isTrue(!Server.showsMap("index.html") && !Server.showsMap("faq.html"), "other pages");
+        });
+
+        test("the visitor counter is off without a token, and adds only Cloudflare's script with one", () -> {
+            equal("", Server.analyticsToken(null));
+            equal("", Server.analyticsToken(""));
+            Check.fails(() -> Server.analyticsToken("abc\"><script>"));
+            Check.fails(() -> Server.analyticsToken("short"));
+
+            String page = "<html>\n  <body>\n    <p>Hi</p>\n  </body>\n</html>\n";
+            equal(page, Server.withAnalytics(page, ""));
+            equal(Server.CSP, Server.withAnalyticsCsp(Server.CSP, ""));
+
+            String token = "0123456789abcdef0123456789abcdef";
+            String counted = Server.withAnalytics(page, token);
+            contains(counted, "<script defer src=\"https://static.cloudflareinsights.com/beacon.min.js\" "
+                    + "data-cf-beacon='{\"token\": \"" + token + "\"}'></script>\n  </body>");
+            equal(1, counted.split("<script", -1).length - 1);
+
+            String csp = Server.withAnalyticsCsp(Server.CSP_MAPS, token);
+            contains(csp, "script-src https://static.cloudflareinsights.com/beacon.min.js;");
+            contains(csp, "connect-src 'self' https://cloudflareinsights.com");
+            contains(csp, "frame-src https://www.google.com");
+            lacks(csp, "script-src 'none'");
+            lacks(csp, "unsafe-inline");
+        });
+
+        test("no page asks for an email address that doesn't exist yet", () -> {
+            for (String path : Server.PAGES.keySet()) {
+                lacks(Client.get(path).text(), "example.com");
+            }
         });
 
         test("the question bar asks what's needed and links to a page for each service", () -> {

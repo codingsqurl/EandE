@@ -6,9 +6,10 @@
 FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /build
 # Refuse to build while the pages still have made-up details (phone, email, license...).
-# Search the .html files for "PLACEHOLDER" to find them.
+# Search the .html files for "PLACEHOLDER:" to find them. The colon matters: the notes at the
+# top of each page mention the word without one, and shouldn't block the build.
 COPY *.html ./
-RUN if grep -l PLACEHOLDER *.html; then \
+RUN if grep -l "PLACEHOLDER:" *.html; then \
       echo "The pages above still have PLACEHOLDER details. Fill them in before deploying." >&2; exit 1; \
     fi
 COPY server/src/ src/
@@ -16,6 +17,9 @@ RUN javac -d classes --release 21 $(find src -name '*.java')
 # Squash the site's text with Brotli now, since Java can't do it while serving.
 RUN apk add --no-cache brotli
 COPY style.css favicon.svg robots.txt sitemap.xml ./
+# The visitor counter's token (set in fly.toml under [build.args]; empty means off). The
+# pages are squashed with it already in them, so they match what the server sends.
+ARG ANALYTICS_TOKEN=""
 RUN java -cp classes eande.Server brotli-sources && brotli -q 11 --rm br/*
 
 # ---------- Step 2: the image that actually runs ----------
@@ -33,6 +37,10 @@ COPY *.html style.css favicon.svg logo.webp apple-touch-icon.png og-image.png ro
 # Run as a regular user rather than root, so a bug in the server can't take over the container.
 RUN adduser -S -H web
 USER web
+
+# The same visitor counter token, for the running server.
+ARG ANALYTICS_TOKEN=""
+ENV ANALYTICS_TOKEN=$ANALYTICS_TOKEN
 
 # Most hosts tell the server which port to use through $PORT. If none is given, use 8080.
 ENV PORT=8080

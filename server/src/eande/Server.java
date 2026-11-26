@@ -45,7 +45,9 @@ public final class Server {
     static final List<String> TOWNS = List.of(
             "colorado-springs", "manitou-springs", "fountain", "security-widefield", "monument", "falcon", "peyton",
             "cascade", "green-mountain-falls", "woodland-park", "divide", "florissant", "lake-george", "hartsel",
-            "buena-vista", "twin-lakes", "aspen");
+            "buena-vista", "twin-lakes", "aspen",
+            "castle-rock", "castle-pines", "parker", "lone-tree", "highlands-ranch", "centennial",
+            "littleton", "englewood", "aurora", "lakewood", "denver");
 
     // The site's pages: the address, then the file it comes from. The home page's question
     // bar ("What do you need help with?") links to one page for each service; the questions
@@ -257,14 +259,61 @@ public final class Server {
 
     // ---------- The pages ----------
 
-    /** A page with the stylesheet's fingerprint filled in. Pages are small, so they're read fresh each visit. */
+    /**
+     * A page with the stylesheet's fingerprint filled in, and the visitor counter when it's
+     * switched on. Pages are small, so they're read fresh each visit.
+     */
     static String pageText(String file) {
         String page = new String(read(SITE.resolve(file)), StandardCharsets.UTF_8);
-        return page.replace("href=\"style.css\"", "href=\"style.css?v=" + styleVersion() + "\"");
+        page = page.replace("href=\"style.css\"", "href=\"style.css?v=" + styleVersion() + "\"");
+        return withAnalytics(page, ANALYTICS_TOKEN);
     }
 
     static boolean showsMap(String file) {
         return file.equals("areas.html") || TOWNS.contains(file.replace(".html", ""));
+    }
+
+    /** The safety rules for a page: maps where it shows one, and the visitor counter when it's on. */
+    static String pageCsp(String file) {
+        return withAnalyticsCsp(showsMap(file) ? CSP_MAPS : CSP, ANALYTICS_TOKEN);
+    }
+
+    // ---------- Visitor counts ----------
+    // Cloudflare Web Analytics counts visits, pages and where visitors came from without
+    // cookies or tracking a person, so the site needs no cookie banner. It's off unless
+    // ANALYTICS_TOKEN holds the site's token from the Cloudflare dashboard. When it's on,
+    // each page gets Cloudflare's one script, and the safety rules allow only that script
+    // and the address it reports to. The token shows in every page, so it isn't a secret.
+    static final String ANALYTICS_TOKEN = analyticsToken(System.getenv("ANALYTICS_TOKEN"));
+    static final String ANALYTICS_SCRIPT = "https://static.cloudflareinsights.com/beacon.min.js";
+    static final String ANALYTICS_REPORTS = "https://cloudflareinsights.com";
+
+    /** The token, or "" for off. It goes into every page, so anything but letters and digits is refused. */
+    static String analyticsToken(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        if (!value.matches("[A-Za-z0-9]{16,64}")) {
+            throw new IllegalStateException("ANALYTICS_TOKEN should be the token from Cloudflare Web Analytics");
+        }
+        return value;
+    }
+
+    static String withAnalytics(String page, String token) {
+        if (token.isEmpty()) {
+            return page;
+        }
+        String beacon = "    <script defer src=\"" + ANALYTICS_SCRIPT + "\" data-cf-beacon='{\"token\": \""
+                + token + "\"}'></script>\n  </body>";
+        return page.replace("  </body>", beacon);
+    }
+
+    static String withAnalyticsCsp(String csp, String token) {
+        if (token.isEmpty()) {
+            return csp;
+        }
+        return csp.replace("script-src 'none'",
+                "script-src " + ANALYTICS_SCRIPT + "; connect-src 'self' " + ANALYTICS_REPORTS);
     }
 
     // ---------- Squashing ahead of time ----------
@@ -295,9 +344,7 @@ public final class Server {
         // "no-cache" means the browser keeps a copy but checks with us before using it.
         // If nothing changed, we answer "304 Not Modified" and it reuses its copy.
         Map<String, String> headers = new LinkedHashMap<>(Map.of("Cache-Control", "no-cache", "ETag", etag));
-        if (showsMap(file)) {
-            headers.put("Content-Security-Policy", CSP_MAPS);
-        }
+        headers.put("Content-Security-Policy", pageCsp(file));
         if (etag.equals(exchange.getRequestHeaders().getFirst("If-None-Match"))) {
             send(exchange, 304, null, null, headers);
             return 304;
