@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<!--
+  One of E&E's town pages. The areas page links here. The Google map searches for the town, which
+  outlines it; the server lets the town pages and the areas page show frames from google.com.
+
+  The header, footer, contact section and call bar are the same on every page (a test checks),
+  so change them on every page at once. Anything marked PLACEHOLDER must be confirmed before launch.
+-->
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Electrician &amp; Property Maintenance in Florissant, CO | E&amp;E Property Maintenance &amp; Home Improvement, LLC</title>
+    <meta name="description" content="E&amp;E serves Florissant, Colorado with electrical work, property maintenance, tree trimming, concrete and home remodels. Free estimates.">
+    <link rel="canonical" href="https://eande.fly.dev/florissant">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#11161d">
+    <link rel="stylesheet" href="style.css?v=3259dea9">
+    <!-- Motion (GSAP). Deferred, so the page shows first; it works fully without them. -->
+    <script defer src="js/gsap-3.12.5.min.js"></script>
+    <script defer src="js/ScrollTrigger-3.12.5.min.js"></script>
+    <script defer src="js/motion.js?v=07138e4f"></script>
+    <!-- Google Analytics behind a cookie banner. Off until js/analytics.js has a Measurement ID. -->
+    <script defer src="js/analytics.js?v=38745b6b"></script>
+    <!-- Reminders to call or text: a once-a-visit card and a wiggle on the Call buttons. -->
+    <script defer src="js/nudge.js?v=0139e1a6"></script>
+    <link rel="preload" href="logo.webp" as="image" type="image/webp">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="E&amp;E Property Maintenance &amp; Home Improvement, LLC">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Electrician &amp; Property Maintenance in Florissant, CO | E&amp;E Property Maintenance &amp; Home Improvement, LLC">
+    <meta property="og:description" content="E&amp;E serves Florissant, Colorado with electrical work, property maintenance, tree trimming, concrete and home remodels. Free estimates.">
+    <meta property="og:url" content="https://eande.fly.dev/florissant">
+    <meta property="og:image" content="https://eande.fly.dev/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="E&amp;E Property Maintenance &amp; Home Improvement, LLC. Serving Colorado Springs, the I-25 corridor to Denver and the mountain towns west to Aspen">
+    <meta name="twitter:card" content="summary_large_image">
+
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="./" aria-label="E&amp;E home">
+          <span class="brand-name">E&amp;E <span>Property Maintenance &amp; Home Improvement, LLC</span></span>
+        </a>
+        <a class="button button-small" href="tel:+17208381503">Call now</a>
+        <!-- Hamburger menu. A built-in popover, so it opens and closes with no JavaScript;
+             tapping outside it or pressing Esc closes it. -->
+        <button class="menu-button" type="button" popovertarget="site-menu" aria-label="Menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path class="bar bar-1" d="M3 6h18" />
+            <path class="bar bar-2" d="M3 12h18" />
+            <path class="bar bar-3" d="M3 18h18" />
+          </svg>
+        </button>
+        <!-- The menu is a small site map: the five services with the same icons as the question bar,
+             then the rest of the site, then Call and Text. The page you're on is marked. -->
+        <nav class="site-nav" id="site-menu" popover aria-label="Main">
+          <p class="nav-heading">Services</p>
+          <div class="nav-services">
+            <a class="nav-service" href="electrical">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></svg>
+              <span>Electrical</span>
+            </a>
+            <a class="nav-service" href="maintenance">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="wrench" d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.7-.7-2.3z" /><path class="wrench-nut" fill-rule="evenodd" d="M16.1 9.4 15.35 10.7h-1.5L13.1 9.4l.75-1.3h1.5zM14.6 8.85a.55.55 0 1 0 0 1.1.55.55 0 1 0 0-1.1z" /></svg>
+              <span>Property maintenance</span>
+            </a>
+            <a class="nav-service" href="trees">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="tree-pole" d="M11 5h2v17h-2z" /><path class="tree-low tree-left" d="M8.27 10.6 4 17h8v-6.4z" /><path class="tree-low tree-right" d="M12 10.6V17h8l-4.27-6.4z" /><path class="tree-high tree-left" d="M8.89 6 5 11h7V6z" /><path class="tree-high tree-right" d="M12 6v5h7l-3.89-5z" /><path class="tree-top" d="M12 2 8.73 6.2h6.54z" /></svg>
+              <span>Tree trimming &amp; removal</span>
+            </a>
+            <a class="nav-service" href="concrete">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="wall-footing" d="M2 19h20v2H2z" /><path class="wall-brick" d="M2 12h5v5H2z" /><path class="wall-brick" d="M9 12h6v5H9z" /><path class="wall-brick" d="M17 12h5v5h-5z" /><path class="wall-brick" d="M2 5h9v5H2z" /><path class="wall-brick" d="M13 5h9v5h-9z" /></svg>
+              <span>Concrete</span>
+            </a>
+            <a class="nav-service" href="remodels">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="house-wall" d="M5 11.2h5.5V21H5z" /><path class="house-wall" d="M13.5 11.2H19V21h-5.5z" /><path class="house-lintel" d="M10.3 11.2h3.4V15h-3.4z" /><path class="house-roof" d="M12 3 2 11.5h20z" /></svg>
+              <span>Home remodels</span>
+            </a>
+          </div>
+          <p class="nav-heading">More</p>
+          <div class="nav-links">
+            <a href="./#why">Why E&amp;E</a>
+            <a href="areas">Service area</a>
+            <a href="faq">FAQ</a>
+            <a href="./#contact">Contact</a>
+          </div>
+          <div class="nav-contact">
+            <a class="button" href="tel:+17208381503">Call</a>
+            <a class="button button-ghost" href="sms:+17208381503">Text a photo</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+
+      <section class="hero hero-page">
+        <div class="container hero-inner">
+          <a class="back-link" href="areas">All areas</a>
+          <h1>Florissant.</h1>
+          <p class="lead">E&amp;E works in Florissant and across the mountain towns between Colorado Springs and Aspen: electrical, property maintenance,
+            tree work, concrete and home remodels, with free estimates.</p>
+          <div class="hero-actions">
+            <a class="button" href="tel:+17208381503">Call (720)&nbsp;838-1503</a>
+            <a class="button button-ghost" href="sms:+17208381503">Text a photo</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <h2>Where Florissant is.</h2>
+          <!-- A Google map searched for the town, which outlines its boundary. -->
+          <iframe class="map-frame" src="https://www.google.com/maps?q=Florissant%2C+CO&amp;output=embed"
+            title="Map of Florissant, Colorado" loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          <p class="nudge">Got a job in Florissant? <a href="tel:+17208381503">Call</a> or <a href="sms:+17208381503">text a photo</a> to (720)&nbsp;838-1503.</p>
+        </div>
+      </section>
+
+      <section class="section section-alt">
+        <div class="container">
+          <nav class="picker" aria-labelledby="picker-question">
+            <h2 id="picker-question" class="picker-question">What do you need help with in Florissant?</h2>
+            <div class="picker-options">
+            <a class="picker-option" href="electrical">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></svg>
+              <span class="picker-name">Electrical</span>
+              <span class="picker-hint">Wiring, lighting and panels</span>
+            </a>
+            <a class="picker-option" href="maintenance">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="wrench" d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.7-.7-2.3z" /><path class="wrench-nut" fill-rule="evenodd" d="M16.1 9.4 15.35 10.7h-1.5L13.1 9.4l.75-1.3h1.5zM14.6 8.85a.55.55 0 1 0 0 1.1.55.55 0 1 0 0-1.1z" /></svg>
+              <span class="picker-name">Property maintenance</span>
+              <span class="picker-hint">Repairs and rental upkeep</span>
+            </a>
+            <a class="picker-option" href="trees">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="tree-pole" d="M11 5h2v17h-2z" /><path class="tree-low tree-left" d="M8.27 10.6 4 17h8v-6.4z" /><path class="tree-low tree-right" d="M12 10.6V17h8l-4.27-6.4z" /><path class="tree-high tree-left" d="M8.89 6 5 11h7V6z" /><path class="tree-high tree-right" d="M12 6v5h7l-3.89-5z" /><path class="tree-top" d="M12 2 8.73 6.2h6.54z" /></svg>
+              <span class="picker-name">Tree trimming &amp; removal</span>
+              <span class="picker-hint">Pruning, removal and cleanup</span>
+            </a>
+            <a class="picker-option" href="concrete">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="wall-footing" d="M2 19h20v2H2z" /><path class="wall-brick" d="M2 12h5v5H2z" /><path class="wall-brick" d="M9 12h6v5H9z" /><path class="wall-brick" d="M17 12h5v5h-5z" /><path class="wall-brick" d="M2 5h9v5H2z" /><path class="wall-brick" d="M13 5h9v5h-9z" /></svg>
+              <span class="picker-name">Concrete</span>
+              <span class="picker-hint">Driveways, patios and repairs</span>
+            </a>
+            <a class="picker-option" href="remodels">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="house-wall" d="M5 11.2h5.5V21H5z" /><path class="house-wall" d="M13.5 11.2H19V21h-5.5z" /><path class="house-lintel" d="M10.3 11.2h3.4V15h-3.4z" /><path class="house-roof" d="M12 3 2 11.5h20z" /></svg>
+              <span class="picker-name">Home remodels</span>
+              <span class="picker-hint">Kitchens, baths and basements</span>
+            </a>
+            </div>
+          </nav>
+        </div>
+      </section>
+
+      <section id="contact" class="section contact">
+        <div class="container">
+          <h2>Tell us about the job.</h2>
+          <p class="lead">Call or text for a free estimate. A photo of the job helps us give you a quick, honest price.</p>
+          <div class="contact-grid">
+            <a class="contact-card" href="tel:+17208381503">
+              <span class="contact-label">Call</span>
+              <span class="contact-value">(720)&nbsp;838-1503</span>
+            </a>
+            <a class="contact-card" href="sms:+17208381503">
+              <span class="contact-label">Text a photo</span>
+              <span class="contact-value">(720)&nbsp;838-1503</span>
+            </a>
+            <div class="contact-card">
+              <span class="contact-label">Hours</span>
+              <span class="contact-value">Mon–Fri, 7am–5pm Mountain Time</span>
+              <span class="contact-label">Emergency calls anytime</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <nav class="container footer-map" aria-label="Site map">
+        <div>
+          <h2>Services</h2>
+          <ul>
+            <li><a href="electrical">Electrical</a></li>
+            <li><a href="maintenance">Property maintenance</a></li>
+            <li><a href="trees">Tree trimming &amp; removal</a></li>
+            <li><a href="concrete">Concrete</a></li>
+            <li><a href="remodels">Home remodels</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>About</h2>
+          <ul>
+            <li><a href="./#why">Why E&amp;E</a></li>
+            <li><a href="remodels#steps">How a remodel works</a></li>
+            <li><a href="areas">Service area</a></li>
+            <li><a href="faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Contact</h2>
+          <ul>
+            <li><a href="tel:+17208381503">Call (720)&nbsp;838-1503</a></li>
+            <li><a href="sms:+17208381503">Text a photo</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="container footer-inner">
+        <p>© 2026 E&amp;E Property Maintenance &amp; Home Improvement, LLC. Colorado Springs, CO</p>
+        <p>Licensed &amp; insured</p>
+        <p class="footer-legal"><a href="privacy">Privacy</a>
+          <!-- Shown by js/analytics.js, which brings the cookie banner back. -->
+          <button class="cookie-settings" type="button" hidden>Cookie settings</button></p>
+      </div>
+    </footer>
+
+    <!-- Phones only: Call and Text stay at the bottom of the screen, in thumb reach.
+         It slides up once the top of the page scrolls away. -->
+    <div class="call-bar" role="region" aria-label="Quick contact">
+      <a class="button" href="tel:+17208381503">Call</a>
+      <a class="button button-ghost" href="sms:+17208381503">Text a photo</a>
+    </div>
+  </body>
+</html>

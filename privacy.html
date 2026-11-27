@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!--
+  E&E's privacy page: what the site collects and how to change your choice. Google's terms
+  require one while Google Analytics is used. Keep it in step with js/analytics.js.
+  The server (server/src/eande/Server.java) sends this file and fills in the fingerprints.
+
+  The header, footer, contact section and call bar are the same on every page (a test checks),
+  so change them on all eight pages at once. Anything marked PLACEHOLDER must be confirmed before launch.
+-->
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Privacy | E&amp;E Property Maintenance &amp; Home Improvement, LLC</title>
+    <meta name="description" content="What the E&amp;E website collects, the Google Analytics cookies it uses only if you accept, and how to change your choice.">
+    <link rel="canonical" href="https://eande.fly.dev/privacy">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#11161d">
+    <link rel="stylesheet" href="style.css?v=3259dea9">
+    <!-- Motion (GSAP). Deferred, so the page shows first; it works fully without them. -->
+    <script defer src="js/gsap-3.12.5.min.js"></script>
+    <script defer src="js/ScrollTrigger-3.12.5.min.js"></script>
+    <script defer src="js/motion.js?v=07138e4f"></script>
+    <!-- Google Analytics behind a cookie banner. Off until js/analytics.js has a Measurement ID. -->
+    <script defer src="js/analytics.js?v=38745b6b"></script>
+    <!-- Reminders to call or text: a once-a-visit card and a wiggle on the Call buttons. -->
+    <script defer src="js/nudge.js?v=0139e1a6"></script>
+    <link rel="preload" href="logo.webp" as="image" type="image/webp">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="E&amp;E Property Maintenance &amp; Home Improvement, LLC">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Privacy | E&amp;E Property Maintenance &amp; Home Improvement, LLC">
+    <meta property="og:description" content="What the E&amp;E website collects, the Google Analytics cookies it uses only if you accept, and how to change your choice.">
+    <meta property="og:url" content="https://eande.fly.dev/privacy">
+    <meta property="og:image" content="https://eande.fly.dev/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="E&amp;E Property Maintenance &amp; Home Improvement, LLC. Serving Colorado Springs, the I-25 corridor to Denver and the mountain towns west to Aspen">
+    <meta name="twitter:card" content="summary_large_image">
+
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="./" aria-label="E&amp;E home">
+          <span class="brand-name">E&amp;E <span>Property Maintenance &amp; Home Improvement, LLC</span></span>
+        </a>
+        <a class="button button-small" href="tel:+17208381503">Call now</a>
+        <!-- Hamburger menu. A built-in popover, so it opens and closes with no JavaScript;
+             tapping outside it or pressing Esc closes it. -->
+        <button class="menu-button" type="button" popovertarget="site-menu" aria-label="Menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path class="bar bar-1" d="M3 6h18" />
+            <path class="bar bar-2" d="M3 12h18" />
+            <path class="bar bar-3" d="M3 18h18" />
+          </svg>
+        </button>
+        <!-- The menu is a small site map: the five services with the same icons as the question bar,
+             then the rest of the site, then Call and Text. The page you're on is marked. -->
+        <nav class="site-nav" id="site-menu" popover aria-label="Main">
+          <p class="nav-heading">Services</p>
+          <div class="nav-services">
+            <a class="nav-service" href="electrical">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></svg>
+              <span>Electrical</span>
+            </a>
+            <a class="nav-service" href="maintenance">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="wrench" d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.7-.7-2.3z" /><path class="wrench-nut" fill-rule="evenodd" d="M16.1 9.4 15.35 10.7h-1.5L13.1 9.4l.75-1.3h1.5zM14.6 8.85a.55.55 0 1 0 0 1.1.55.55 0 1 0 0-1.1z" /></svg>
+              <span>Property maintenance</span>
+            </a>
+            <a class="nav-service" href="trees">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="tree-pole" d="M11 5h2v17h-2z" /><path class="tree-low tree-left" d="M8.27 10.6 4 17h8v-6.4z" /><path class="tree-low tree-right" d="M12 10.6V17h8l-4.27-6.4z" /><path class="tree-high tree-left" d="M8.89 6 5 11h7V6z" /><path class="tree-high tree-right" d="M12 6v5h7l-3.89-5z" /><path class="tree-top" d="M12 2 8.73 6.2h6.54z" /></svg>
+              <span>Tree trimming &amp; removal</span>
+            </a>
+            <a class="nav-service" href="concrete">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="wall-footing" d="M2 19h20v2H2z" /><path class="wall-brick" d="M2 12h5v5H2z" /><path class="wall-brick" d="M9 12h6v5H9z" /><path class="wall-brick" d="M17 12h5v5h-5z" /><path class="wall-brick" d="M2 5h9v5H2z" /><path class="wall-brick" d="M13 5h9v5h-9z" /></svg>
+              <span>Concrete</span>
+            </a>
+            <a class="nav-service" href="remodels">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="house-wall" d="M5 11.2h5.5V21H5z" /><path class="house-wall" d="M13.5 11.2H19V21h-5.5z" /><path class="house-lintel" d="M10.3 11.2h3.4V15h-3.4z" /><path class="house-roof" d="M12 3 2 11.5h20z" /></svg>
+              <span>Home remodels</span>
+            </a>
+          </div>
+          <p class="nav-heading">More</p>
+          <div class="nav-links">
+            <a href="./#why">Why E&amp;E</a>
+            <a href="areas">Service area</a>
+            <a href="faq">FAQ</a>
+            <a href="./#contact">Contact</a>
+          </div>
+          <div class="nav-contact">
+            <a class="button" href="tel:+17208381503">Call</a>
+            <a class="button button-ghost" href="sms:+17208381503">Text a photo</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+
+      <section class="hero hero-page">
+        <div class="container hero-inner">
+          <h1>Privacy.</h1>
+          <p class="lead">What this website collects, and how to say no.</p>
+        </div>
+      </section>
+
+      <section class="section section-alt">
+        <div class="container prose">
+          <h2>The short version</h2>
+          <p>This site doesn't ask for your name, address or payment details, and it has no forms.
+            When you call or text us, that goes straight to our phone, not through the website.</p>
+
+          <h2>Google Analytics, only if you accept</h2>
+          <p>If you press Accept on the cookie banner, the site uses Google Analytics to count visits
+            and see how people find and use it, so we can make it better. Google then sets cookies
+            in your browser and receives details like the pages you view, how long you stay, the
+            site or search that sent you, your device and browser type, and your rough location
+            (city or region, worked out from your internet address, which Google Analytics doesn't
+            store in full). It's used for counting only: nothing is shared for advertising.</p>
+          <p>If you press Decline, or never answer, Google Analytics doesn't load at all and sets
+            no cookies. Your choice is saved in your browser so the banner doesn't keep asking.</p>
+          <p>Google's own policy explains how it handles this data:
+            <a href="https://policies.google.com/privacy">policies.google.com/privacy</a>.</p>
+
+          <h2>Google Maps on the service area pages</h2>
+          <p>The service area page and each town's page show a Google map. To draw it, your browser
+            connects to Google, which receives your internet address and the name of this site, and
+            may set its own cookies, as it does on any site that shows a Google map. This happens
+            whatever you choose on the cookie banner. Google's policy above covers it. The other
+            pages don't show a map.</p>
+
+          <h2>Server logs</h2>
+          <p>Like almost every website, the server notes each request it answers: your internet
+            address, the page asked for, and the time. That's used only to keep the site running
+            and to block attacks, never to identify visitors or for advertising.</p>
+
+          <h2>Changing your mind</h2>
+          <p>Use <strong>Cookie settings</strong> at the bottom of any page to bring the banner back.
+            Switching to Decline stops Google Analytics, reloads the page without it, and deletes
+            its cookies from this site.
+            Clearing your browser's data for this site does the same.</p>
+
+          <h2>Questions</h2>
+          <p>Call or text <a href="tel:+17208381503">(720)&nbsp;838-1503</a>.</p>
+          <!-- If Cloudflare Web Analytics is ever switched on (ANALYTICS_TOKEN), add a section for it
+               here: it counts visits without cookies, on every page, regardless of the banner. -->
+          <p>Last updated November 27, 2026.</p>
+        </div>
+      </section>
+
+      <section id="contact" class="section contact">
+        <div class="container">
+          <h2>Tell us about the job.</h2>
+          <p class="lead">Call or text for a free estimate. A photo of the job helps us give you a quick, honest price.</p>
+          <div class="contact-grid">
+            <a class="contact-card" href="tel:+17208381503">
+              <span class="contact-label">Call</span>
+              <span class="contact-value">(720)&nbsp;838-1503</span>
+            </a>
+            <a class="contact-card" href="sms:+17208381503">
+              <span class="contact-label">Text a photo</span>
+              <span class="contact-value">(720)&nbsp;838-1503</span>
+            </a>
+            <div class="contact-card">
+              <span class="contact-label">Hours</span>
+              <span class="contact-value">Mon–Fri, 7am–5pm Mountain Time</span>
+              <span class="contact-label">Emergency calls anytime</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <nav class="container footer-map" aria-label="Site map">
+        <div>
+          <h2>Services</h2>
+          <ul>
+            <li><a href="electrical">Electrical</a></li>
+            <li><a href="maintenance">Property maintenance</a></li>
+            <li><a href="trees">Tree trimming &amp; removal</a></li>
+            <li><a href="concrete">Concrete</a></li>
+            <li><a href="remodels">Home remodels</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>About</h2>
+          <ul>
+            <li><a href="./#why">Why E&amp;E</a></li>
+            <li><a href="remodels#steps">How a remodel works</a></li>
+            <li><a href="areas">Service area</a></li>
+            <li><a href="faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Contact</h2>
+          <ul>
+            <li><a href="tel:+17208381503">Call (720)&nbsp;838-1503</a></li>
+            <li><a href="sms:+17208381503">Text a photo</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="container footer-inner">
+        <p>© 2026 E&amp;E Property Maintenance &amp; Home Improvement, LLC. Colorado Springs, CO</p>
+        <p>Licensed &amp; insured</p>
+        <p class="footer-legal"><a href="privacy">Privacy</a>
+          <!-- Shown by js/analytics.js, which brings the cookie banner back. -->
+          <button class="cookie-settings" type="button" hidden>Cookie settings</button></p>
+      </div>
+    </footer>
+
+    <!-- Phones only: Call and Text stay at the bottom of the screen, in thumb reach.
+         It slides up once the top of the page scrolls away. -->
+    <div class="call-bar" role="region" aria-label="Quick contact">
+      <a class="button" href="tel:+17208381503">Call</a>
+      <a class="button button-ghost" href="sms:+17208381503">Text a photo</a>
+    </div>
+  </body>
+</html>

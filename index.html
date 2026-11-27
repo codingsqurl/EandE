@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<!--
+  The E&E home page. The server (server/src/eande/Server.java) sends this file and
+  fills in the stylesheet's and motion script's fingerprints. The only JavaScript is the motion
+  (GSAP, js/), and the page works fully without it.
+
+  Anything marked PLACEHOLDER is made up and must be swapped for the real thing
+  before launch. The Docker build refuses to run while any are left.
+-->
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>E&amp;E Property Maintenance &amp; Home Improvement, LLC | Colorado Springs</title>
+    <!-- Kept under about 155 characters so Google shows all of it. -->
+    <meta name="description" content="Electrician, property maintenance, tree trimming, concrete and home remodels from Denver to Colorado Springs and Aspen. One call for the whole property.">
+    <link rel="canonical" href="https://eande.fly.dev/">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#11161d">
+    <link rel="stylesheet" href="style.css?v=3259dea9">
+    <!-- Motion (GSAP). Deferred, so the page shows first; it works fully without them. -->
+    <script defer src="js/gsap-3.12.5.min.js"></script>
+    <script defer src="js/ScrollTrigger-3.12.5.min.js"></script>
+    <script defer src="js/motion.js?v=07138e4f"></script>
+    <!-- Google Analytics behind a cookie banner. Off until js/analytics.js has a Measurement ID. -->
+    <script defer src="js/analytics.js?v=38745b6b"></script>
+    <!-- Reminders to call or text: a once-a-visit card and a wiggle on the Call buttons. -->
+    <script defer src="js/nudge.js?v=0139e1a6"></script>
+    <link rel="preload" href="logo.webp" as="image" type="image/webp">
+
+    <!-- What social apps and texts show when someone shares the link.
+         The image's source is art/og-image.svg. -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="E&amp;E Property Maintenance &amp; Home Improvement, LLC">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="E&amp;E Property Maintenance &amp; Home Improvement, LLC">
+    <meta property="og:description" content="One call for the whole property: electrical, maintenance, tree work, concrete and remodels in Colorado Springs.">
+    <meta property="og:url" content="https://eande.fly.dev/">
+    <meta property="og:image" content="https://eande.fly.dev/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="E&amp;E Property Maintenance &amp; Home Improvement, LLC. Serving Colorado Springs, the I-25 corridor to Denver and the mountain towns west to Aspen">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Tells Google this is a local business, so it can show up on Maps and in local results.
+         This is data, not a script, so the "this site's scripts only" rule doesn't block it.
+         Keep it matching what the page says: the services, towns and hours below are the same as the page's. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": [
+            "Electrician",
+            "HomeAndConstructionBusiness"
+          ],
+          "@id": "https://eande.fly.dev/#business",
+          "name": "E&E Property Maintenance & Home Improvement, LLC",
+          "description": "Electrical, property maintenance, tree trimming, concrete and home remodels across Colorado Springs, the I-25 corridor to Denver and the mountain towns west to Aspen.",
+          "url": "https://eande.fly.dev/",
+          "logo": "https://eande.fly.dev/apple-touch-icon.png",
+          "image": "https://eande.fly.dev/og-image.png",
+          "telephone": "+1-720-838-1503",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Colorado Springs",
+            "addressRegion": "CO",
+            "addressCountry": "US"
+          },
+          "areaServed": [
+            {
+              "@type": "City",
+              "name": "Colorado Springs, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Fountain, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Monument, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Falcon, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Security-Widefield, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Manitou Springs, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Peyton, CO"
+            },
+            {
+              "@type": "AdministrativeArea",
+              "name": "El Paso County, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Woodland Park, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Divide, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Florissant, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Lake George, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Buena Vista, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Twin Lakes, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Aspen, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Cascade, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Green Mountain Falls, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Hartsel, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Castle Rock, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Castle Pines, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Parker, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Lone Tree, CO"
+            },
+            {
+              "@type": "Place",
+              "name": "Highlands Ranch, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Centennial, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Littleton, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Englewood, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Aurora, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Lakewood, CO"
+            },
+            {
+              "@type": "City",
+              "name": "Denver, CO"
+            }
+          ],
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "07:00",
+            "closes": "17:00"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Electrical",
+                  "url": "https://eande.fly.dev/electrical",
+                  "description": "Outlets, lighting, panel upgrades, new circuits, troubleshooting, detectors and EV charger circuits."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Property maintenance",
+                  "url": "https://eande.fly.dev/maintenance",
+                  "description": "Repairs, drywall, doors and locks, rental turnovers and ongoing upkeep for landlords."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Tree trimming & removal",
+                  "url": "https://eande.fly.dev/trees",
+                  "description": "Trimming, pruning, full removal, storm cleanup and hauling."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Concrete",
+                  "url": "https://eande.fly.dev/concrete",
+                  "description": "Driveways, walkways, patios, slabs, steps and concrete repair."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Home remodels",
+                  "url": "https://eande.fly.dev/remodels",
+                  "description": "Kitchens, bathrooms, basements, flooring and interiors."
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="./" aria-label="E&amp;E home">
+          <span class="brand-name">E&amp;E <span>Property Maintenance &amp; Home Improvement, LLC</span></span>
+        </a>
+        <a class="button button-small" href="tel:+17208381503">Call now</a>
+        <!-- Hamburger menu. A built-in popover, so it opens and closes with no JavaScript;
+             tapping outside it or pressing Esc closes it. -->
+        <button class="menu-button" type="button" popovertarget="site-menu" aria-label="Menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path class="bar bar-1" d="M3 6h18" />
+            <path class="bar bar-2" d="M3 12h18" />
+            <path class="bar bar-3" d="M3 18h18" />
+          </svg>
+        </button>
+        <!-- The menu is a small site map: the five services with the same icons as the question bar,
+             then the rest of the site, then Call and Text. The page you're on is marked. -->
+        <nav class="site-nav" id="site-menu" popover aria-label="Main">
+          <p class="nav-heading">Services</p>
+          <div class="nav-services">
+            <a class="nav-service" href="electrical">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></svg>
+              <span>Electrical</span>
+            </a>
+            <a class="nav-service" href="maintenance">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="wrench" d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.7-.7-2.3z" /><path class="wrench-nut" fill-rule="evenodd" d="M16.1 9.4 15.35 10.7h-1.5L13.1 9.4l.75-1.3h1.5zM14.6 8.85a.55.55 0 1 0 0 1.1.55.55 0 1 0 0-1.1z" /></svg>
+              <span>Property maintenance</span>
+            </a>
+            <a class="nav-service" href="trees">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="tree-pole" d="M11 5h2v17h-2z" /><path class="tree-low tree-left" d="M8.27 10.6 4 17h8v-6.4z" /><path class="tree-low tree-right" d="M12 10.6V17h8l-4.27-6.4z" /><path class="tree-high tree-left" d="M8.89 6 5 11h7V6z" /><path class="tree-high tree-right" d="M12 6v5h7l-3.89-5z" /><path class="tree-top" d="M12 2 8.73 6.2h6.54z" /></svg>
+              <span>Tree trimming &amp; removal</span>
+            </a>
+            <a class="nav-service" href="concrete">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="wall-footing" d="M2 19h20v2H2z" /><path class="wall-brick" d="M2 12h5v5H2z" /><path class="wall-brick" d="M9 12h6v5H9z" /><path class="wall-brick" d="M17 12h5v5h-5z" /><path class="wall-brick" d="M2 5h9v5H2z" /><path class="wall-brick" d="M13 5h9v5h-9z" /></svg>
+              <span>Concrete</span>
+            </a>
+            <a class="nav-service" href="remodels">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="house-wall" d="M5 11.2h5.5V21H5z" /><path class="house-wall" d="M13.5 11.2H19V21h-5.5z" /><path class="house-lintel" d="M10.3 11.2h3.4V15h-3.4z" /><path class="house-roof" d="M12 3 2 11.5h20z" /></svg>
+              <span>Home remodels</span>
+            </a>
+          </div>
+          <p class="nav-heading">More</p>
+          <div class="nav-links">
+            <a href="./#why">Why E&amp;E</a>
+            <a href="areas">Service area</a>
+            <a href="faq">FAQ</a>
+            <a href="./#contact">Contact</a>
+          </div>
+          <div class="nav-contact">
+            <a class="button" href="tel:+17208381503">Call</a>
+            <a class="button button-ghost" href="sms:+17208381503">Text a photo</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+
+      <!-- The question bar is the first thing on the page: pick a service and go to its page. -->
+      <section class="hero hero-intro">
+        <div class="container hero-inner">
+          <h1>ONE CALL <span class="accent">Handles it all</span>.</h1>
+          <p class="lead">E&amp;E is a licensed electrician and property maintenance crew in Colorado Springs.
+            We also trim trees, pour concrete and remodel homes, and we leave every job clean.</p>
+          <nav id="services" class="picker" aria-labelledby="picker-question">
+            <h2 id="picker-question" class="picker-question">What do you need help with?</h2>
+            <div class="picker-options">
+            <a class="picker-option" href="electrical">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></svg>
+              <span class="picker-name">Electrical</span>
+              <span class="picker-hint">Wiring, lighting and panels</span>
+            </a>
+            <a class="picker-option" href="maintenance">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="wrench" d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.7-.7-2.3z" /><path class="wrench-nut" fill-rule="evenodd" d="M16.1 9.4 15.35 10.7h-1.5L13.1 9.4l.75-1.3h1.5zM14.6 8.85a.55.55 0 1 0 0 1.1.55.55 0 1 0 0-1.1z" /></svg>
+              <span class="picker-name">Property maintenance</span>
+              <span class="picker-hint">Repairs and rental upkeep</span>
+            </a>
+            <a class="picker-option" href="trees">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="tree-pole" d="M11 5h2v17h-2z" /><path class="tree-low tree-left" d="M8.27 10.6 4 17h8v-6.4z" /><path class="tree-low tree-right" d="M12 10.6V17h8l-4.27-6.4z" /><path class="tree-high tree-left" d="M8.89 6 5 11h7V6z" /><path class="tree-high tree-right" d="M12 6v5h7l-3.89-5z" /><path class="tree-top" d="M12 2 8.73 6.2h6.54z" /></svg>
+              <span class="picker-name">Tree trimming &amp; removal</span>
+              <span class="picker-hint">Pruning, removal and cleanup</span>
+            </a>
+            <a class="picker-option" href="concrete">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="wall-footing" d="M2 19h20v2H2z" /><path class="wall-brick" d="M2 12h5v5H2z" /><path class="wall-brick" d="M9 12h6v5H9z" /><path class="wall-brick" d="M17 12h5v5h-5z" /><path class="wall-brick" d="M2 5h9v5H2z" /><path class="wall-brick" d="M13 5h9v5h-9z" /></svg>
+              <span class="picker-name">Concrete</span>
+              <span class="picker-hint">Driveways, patios and repairs</span>
+            </a>
+            <a class="picker-option" href="remodels">
+              <svg class="picker-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="house-wall" d="M5 11.2h5.5V21H5z" /><path class="house-wall" d="M13.5 11.2H19V21h-5.5z" /><path class="house-lintel" d="M10.3 11.2h3.4V15h-3.4z" /><path class="house-roof" d="M12 3 2 11.5h20z" /></svg>
+              <span class="picker-name">Home remodels</span>
+              <span class="picker-hint">Kitchens, baths and basements</span>
+            </a>
+            </div>
+          </nav>
+          <p class="hero-call">Not sure which one? <a href="tel:+17208381503">Call</a> or
+            <a href="sms:+17208381503">text</a> (720)&nbsp;838-1503 and we'll sort it out.</p>
+        </div>
+      </section>
+
+      <!-- Styled like the contact section: dark, with the same glowing-edge cards. -->
+      <section id="why" class="section contact">
+        <div class="container">
+          <h2>Why people choose E&amp;E.</h2>
+          <div class="reasons">
+            <div class="contact-card reason">
+              <h3>One call covers it all</h3>
+              <p>Electrical, maintenance, trees, concrete and remodels from one crew, so you're not juggling five contractors for one property.</p>
+            </div>
+            <div class="contact-card reason">
+              <h3>Straight answers</h3>
+              <p>Estimates are free, and you'll know what's wrong, what it costs and how long it takes before any work starts.</p>
+            </div>
+            <div class="contact-card reason">
+              <h3>Shows up when promised</h3>
+              <p>We keep the appointment, keep you posted and don't disappear halfway through the job.</p>
+            </div>
+            <div class="contact-card reason">
+              <h3>Leaves it clean</h3>
+              <p>Drop cloths go down, debris goes out. The only sign we were there is the finished work.</p>
+            </div>
+          </div>
+          <p class="nudge">Want that crew on your job? <a href="tel:+17208381503">Call</a> or <a href="sms:+17208381503">text a photo</a> to (720)&nbsp;838-1503.</p>
+        </div>
+      </section>
+
+      <section id="area" class="section section-alt">
+        <div class="container">
+          <h2>Where we work.</h2>
+          <p class="lead">Colorado Springs and the rest of El Paso County, up I-25 to Denver, and every mountain
+            town between the Springs and Aspen. Nearby and not on the list? Just ask.</p>
+          <a class="button" href="areas">See every town we serve</a>
+          <p class="nudge">Not sure we come out to you? <a href="tel:+17208381503">Call</a> or
+            <a href="sms:+17208381503">text</a> (720)&nbsp;838-1503 and ask.</p>
+        </div>
+      </section>
+
+      <section id="contact" class="section contact">
+        <div class="container">
+          <h2>Tell us about the job.</h2>
+          <p class="lead">Call or text for a free estimate. A photo of the job helps us give you a quick, honest price.</p>
+          <div class="contact-grid">
+            <a class="contact-card" href="tel:+17208381503">
+              <span class="contact-label">Call</span>
+              <span class="contact-value">(720)&nbsp;838-1503</span>
+            </a>
+            <a class="contact-card" href="sms:+17208381503">
+              <span class="contact-label">Text a photo</span>
+              <span class="contact-value">(720)&nbsp;838-1503</span>
+            </a>
+            <div class="contact-card">
+              <span class="contact-label">Hours</span>
+              <span class="contact-value">Mon–Fri, 7am–5pm Mountain Time</span>
+              <span class="contact-label">Emergency calls anytime</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <nav class="container footer-map" aria-label="Site map">
+        <div>
+          <h2>Services</h2>
+          <ul>
+            <li><a href="electrical">Electrical</a></li>
+            <li><a href="maintenance">Property maintenance</a></li>
+            <li><a href="trees">Tree trimming &amp; removal</a></li>
+            <li><a href="concrete">Concrete</a></li>
+            <li><a href="remodels">Home remodels</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>About</h2>
+          <ul>
+            <li><a href="./#why">Why E&amp;E</a></li>
+            <li><a href="remodels#steps">How a remodel works</a></li>
+            <li><a href="areas">Service area</a></li>
+            <li><a href="faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Contact</h2>
+          <ul>
+            <li><a href="tel:+17208381503">Call (720)&nbsp;838-1503</a></li>
+            <li><a href="sms:+17208381503">Text a photo</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="container footer-inner">
+        <p>© 2026 E&amp;E Property Maintenance &amp; Home Improvement, LLC. Colorado Springs, CO</p>
+        <p>Licensed &amp; insured</p>
+        <p class="footer-legal"><a href="privacy">Privacy</a>
+          <!-- Shown by js/analytics.js, which brings the cookie banner back. -->
+          <button class="cookie-settings" type="button" hidden>Cookie settings</button></p>
+      </div>
+    </footer>
+
+    <!-- Phones only: Call and Text stay at the bottom of the screen, in thumb reach.
+         It slides up once the top of the page scrolls away. -->
+    <div class="call-bar" role="region" aria-label="Quick contact">
+      <a class="button" href="tel:+17208381503">Call</a>
+      <a class="button button-ghost" href="sms:+17208381503">Text a photo</a>
+    </div>
+  </body>
+</html>
