@@ -335,50 +335,8 @@
     return;
   }
 
-  // ---------- Scrolling: groups rise into place ----------
-  // Only things still below the screen are hidden, so nothing already in view blinks.
-  function belowScreen(element) {
-    return element.getBoundingClientRect().top > window.innerHeight;
-  }
-
-  function rise(selector, options) {
-    var items = gsap.utils.toArray(selector).filter(belowScreen);
-    if (!items.length) {
-      return;
-    }
-    gsap.set(items, { opacity: 0, y: options.y, transition: "none" });
-    window.ScrollTrigger.batch(items, {
-      start: "top 90%",
-      once: true,
-      onEnter: function (batch) {
-        gsap.to(batch, {
-          opacity: 1, y: 0, duration: options.duration, ease: arrive,
-          // Keep a long row from dragging: the whole batch is in within a third of a second.
-          stagger: Math.min(options.stagger, 0.35 / batch.length),
-          clearProps: "transform,opacity,transition"
-        });
-      }
-    });
-  }
-
-  // Cards, steps, questions and towns arrive as lists.
-  rise(".reasons > *, .service-columns > *, .contact-grid > *, .faq-list > *", { y: 32, duration: 0.8, stagger: 0.08 });
-  rise(".steps li", { y: 24, duration: 0.7, stagger: 0.12 });
-  rise(".towns > *", { y: 14, duration: 0.6, stagger: 0.03 });
-  // Section headings and intros just fade up a touch, once.
-  rise(".section h2, .section .lead, .towns-heading", { y: 10, duration: 0.6, stagger: 0.06 });
-
-  // The remodel steps' numbers pop in as their step arrives.
-  gsap.utils.toArray(".steps li").filter(belowScreen).forEach(function (step) {
-    var number = step.querySelector(".step-number");
-    if (number) {
-      gsap.from(number, {
-        scale: 0.4, opacity: 0, duration: 0.6, ease: "back.out(2)", delay: 0.12,
-        clearProps: "transform,opacity",
-        scrollTrigger: { trigger: step, start: "top 90%", once: true }
-      });
-    }
-  });
+  // Nothing fades or rises in on scroll: content sits ready when you get to it.
+  // (Scroll reveals were taken out on purpose, from the taste-skill pass.)
 
   // ---------- Phones: the call bar slides up once the hero is gone ----------
   var bar = document.querySelector(".call-bar");

@@ -107,6 +107,8 @@ a {
 :focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
+  /* A dark ring under the amber one, so focus shows on amber, dark and light grounds alike. */
+  box-shadow: 0 0 0 6px var(--ink);
 }
 
 .container {
@@ -122,9 +124,9 @@ a {
   top: -100px;
   background: var(--accent);
   color: var(--ink);
-  padding: 8px 14px;
+  padding: 12px 16px;
   border-radius: 8px;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .skip-link:focus {
@@ -424,6 +426,18 @@ a {
   color: var(--text-on-ink);
   /* The same space above and below, so the hero sits evenly between the header and the next section. */
   padding: clamp(56px, 8vw, 80px) 0;
+}
+
+/* The home page's hero has the first screen to itself: nothing of the next section peeks in. */
+.hero-intro {
+  min-height: calc(100vh - 56px);
+  min-height: calc(100dvh - 56px);
+  display: flex;
+  align-items: center;
+}
+
+.hero-intro > .container {
+  width: 100%;
 }
 
 .hero h1 {
@@ -776,6 +790,11 @@ a {
   margin: 0;
 }
 
+/* In the dark hero the tiles sit on a blurred logo, so their hints get a brighter grey to stay readable. */
+.hero .picker {
+  --opt-muted: #cfd6de;
+}
+
 /* ---------- Why E&E ---------- */
 
 /* Each reason is a contact card (see Contact and Lights): the same dark fill and amber edge. */
@@ -1008,6 +1027,8 @@ a {
 .contact .contact-label,
 .section-dark .steps p {
   color: #dfe5ec;
+  /* Keeps the words readable while the amber light sweeps behind them. */
+  text-shadow: 0 1px 3px rgba(17, 22, 29, 0.9), 0 0 12px rgba(17, 22, 29, 0.7);
 }
 
 /* The light sections' tiles and boxes (the question bar on service and town pages, the town
@@ -1783,4 +1804,25 @@ a.contact-card:active {
   .steps li::after {
     animation: none;
   }
+}
+
+/* ---------- Taste pass (2026-11-27) ---------- */
+
+/* Phones: footer links get a full 44px thumb target, so a tap never lands on the neighbour. */
+@media (max-width: 680px) {
+  .footer-map a,
+  .footer-inner a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .footer-map li + li {
+    margin-top: 0;
+  }
+}
+
+/* While the cookie banner is up, the page gets room at the bottom so it never hides the last lines. */
+body:has(.consent:not([hidden])) {
+  padding-bottom: 180px;
 }
