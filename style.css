@@ -43,8 +43,6 @@
 }
 
 html {
-  /* Everything is drawn at 7/8 size. */
-  zoom: 0.875;
   scroll-behavior: smooth;
   /* Keeps section headings from hiding under the sticky header after a nav click. */
   scroll-padding-top: 80px;
@@ -53,6 +51,14 @@ html {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* Computers draw everything at 7/8 size, for a tighter desktop layout. Phones and tablets
+   stay at full size, so text is a readable 16px and every button is a full finger's width. */
+@media (min-width: 1024px) {
+  html {
+    zoom: 0.875;
   }
 }
 
@@ -68,6 +74,8 @@ body {
 h1,
 h2,
 h3 {
+  /* Even line lengths, so a heading never ends on one stranded word. */
+  text-wrap: balance;
   line-height: 1.15;
   letter-spacing: -0.02em;
   margin: 0 0 0.5em;
@@ -84,6 +92,7 @@ h3 {
 
 p {
   margin: 0 0 1em;
+  text-wrap: pretty;
 }
 
 a {
@@ -134,6 +143,10 @@ a {
 /* ---------- Buttons ---------- */
 
 .button {
+  /* Its borders, fills and glow are set under "Lights". */
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   display: inline-block;
   background-color: var(--accent);
   color: var(--ink);
@@ -141,31 +154,21 @@ a {
   text-decoration: none;
   padding: 14px 24px;
   border-radius: 10px;
-  border: 2px solid var(--accent);
   transition: background-color 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.2s;
 }
 
 .button:hover {
   background-color: var(--accent-hover);
-  border-color: var(--accent-hover);
   transform: translateY(-1px);
 }
 
 .button-small {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   padding: 8px 16px;
   font-size: 0.95rem;
   white-space: nowrap;
-}
-
-.button-ghost {
-  background-color: transparent;
-  color: var(--text-on-ink);
-  border-color: var(--ink-line);
-}
-
-.button-ghost:hover {
-  background-color: var(--ink-2);
-  border-color: var(--muted-on-ink);
 }
 
 /* ---------- Header ---------- */
@@ -211,6 +214,7 @@ a {
   text-decoration: none;
   font-weight: 800;
   font-size: 1.15rem;
+  min-height: 44px;
   margin-right: auto;
   /* Room between the logo and the buttons. */
   padding-right: 14px;
@@ -232,8 +236,8 @@ a {
 .menu-button {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
   padding: 0;
   background: none;
@@ -409,6 +413,10 @@ a {
 /* ---------- Hero ---------- */
 
 .hero {
+  /* Holds the logo layers drawn under "Lights". */
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background-color: var(--ink);
   background-image:
     radial-gradient(ellipse at 85% 0%, rgba(245, 179, 1, 0.16), transparent 55%),
@@ -438,6 +446,7 @@ a {
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
   margin: 24px 0 0;
 }
@@ -486,7 +495,9 @@ a {
 
 .back-link {
   display: inline-block;
-  margin-bottom: 18px;
+  /* Padded to a full tap height without moving the text. */
+  padding: 10px 4px;
+  margin: -10px 0 8px;
   color: var(--muted-on-ink);
   font-weight: 600;
   text-decoration: none;
@@ -729,7 +740,6 @@ a {
 
 .section-dark {
   background-color: var(--ink);
-  background-image: radial-gradient(ellipse at 10% 100%, rgba(245, 179, 1, 0.12), transparent 55%);
   color: var(--text-on-ink);
 }
 
@@ -757,6 +767,8 @@ a {
   color: var(--ink);
   font-weight: 800;
   margin-bottom: 14px;
+  /* Pulses one after another, like current moving down a line (see "Lights"). */
+  animation: charge 4s ease-in-out infinite;
 }
 
 .steps p {
@@ -792,11 +804,8 @@ a {
   border: 1px solid var(--card-line);
   border-radius: var(--radius);
   background-color: var(--paper-2);
-}
-
-/* Kept short so it never fills the screen. A finger on the map moves the map, not the page,
-   so a tall map traps scrolling; on a phone it's a short strip with plenty of page around it. */
-.map-frame {
+  /* Kept short so it never fills the screen. A finger on the map moves the map, not the page,
+     so a tall map traps scrolling; on a phone it's a short strip with plenty of page around it. */
   max-height: 460px;
 }
 
@@ -823,16 +832,10 @@ a {
   flex-direction: column;
   gap: 2px;
   padding: 16px 18px;
-  background-color: var(--card);
-  border: 1px solid var(--card-line);
+  border: 1px solid;
   border-radius: var(--radius);
   text-decoration: none;
   transition: border-color 0.15s, box-shadow 0.2s;
-}
-
-.town:hover {
-  border-color: var(--accent);
-  box-shadow: 0 0 24px rgba(245, 179, 1, 0.2);
 }
 
 .town-name {
@@ -843,6 +846,24 @@ a {
 .town-link {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+/* Phones: two towns across, so the area list is half as long to scroll. */
+@media (max-width: 680px) {
+  .towns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .town {
+    padding: 14px 10px;
+    justify-content: center;
+  }
+
+  .town-name {
+    font-size: 1rem;
+    line-height: 1.3;
+  }
 }
 
 .towns-note {
@@ -856,15 +877,22 @@ a {
 .faq-list {
   display: grid;
   gap: 10px;
-  margin-top: 24px;
+  margin: 24px auto 0;
   max-width: 820px;
 }
 
+/* The FAQ page's list opens its section with no heading above it, so no gap either. */
+.faq-list:first-child {
+  margin-top: 0;
+}
+
+/* Left-aligned in the centred page, since paragraphs are easier to read that way. Its glass
+   fill is set with the town cards'; an open answer gets a lit edge. */
 .faq {
-  background-color: var(--card);
-  border: 1px solid var(--card-line);
+  text-align: left;
+  border: 1px solid;
   border-radius: var(--radius);
-  box-shadow: 0 1px 2px rgba(17, 22, 29, 0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .faq summary {
@@ -934,6 +962,7 @@ a {
 .contact-card {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
   border-radius: var(--radius);
   padding: 20px 22px;
@@ -967,16 +996,6 @@ a {
   background-image:
     radial-gradient(ellipse at 85% 0%, rgba(245, 179, 1, 0.1), transparent 50%),
     radial-gradient(ellipse at 10% 100%, rgba(245, 179, 1, 0.07), transparent 50%);
-}
-
-@media (hover: hover) {
-  .service-card:hover {
-    background-color: color-mix(in srgb, var(--card) 78%, transparent);
-  }
-
-  a.contact-card:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-  }
 }
 
 .contact .reason h3,
@@ -1040,6 +1059,7 @@ a {
 }
 
 .footer-map h2 {
+  max-width: none;
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -1068,7 +1088,7 @@ a {
 .footer-inner {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   gap: 8px 24px;
 }
 
@@ -1079,19 +1099,23 @@ a {
 /* Privacy, and Cookie settings once Google Analytics is switched on. */
 .footer-legal {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 0 8px;
   justify-content: center;
 }
 
 .footer-legal a,
 .cookie-settings {
+  /* A full tap height on a phone without spreading the footer out. */
+  display: inline-block;
+  padding: 11px 6px;
+  margin: -11px 0;
   color: var(--muted-on-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .cookie-settings {
-  padding: 0;
   background: none;
   border: 0;
   font: inherit;
@@ -1317,8 +1341,8 @@ a {
 
 /* ---------- Centred layout ----------
    Phones come first, so the page body is centred top to bottom: headings, text, buttons,
-   cards and the footer. The header is left alone. The FAQ answers stay left-aligned,
-   since paragraphs are easier to read that way. */
+   cards and the footer. The header is left alone. (The FAQ answers and privacy page stay
+   left-aligned; see their own rules.) */
 
 main,
 .site-footer {
@@ -1331,24 +1355,6 @@ main h2,
 main .lead {
   margin-left: auto;
   margin-right: auto;
-}
-
-.hero-actions,
-.footer-inner {
-  justify-content: center;
-}
-
-.contact-card {
-  align-items: center;
-}
-
-.faq-list {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.faq {
-  text-align: left;
 }
 
 /* ---------- Lights ----------
@@ -1372,12 +1378,6 @@ main .lead {
    only the hero. It's dimmed so the heading, intro and buttons read on top of it. Its black parts
    were made see-through to drop the fake checkerboard in the file he sent, so it only works on a
    dark background like this one. It's fitted inside the hero with some room at the edges. */
-.hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-
 .hero::before {
   content: "";
   position: absolute;
@@ -1386,9 +1386,17 @@ main .lead {
   background: url("logo.webp") center / contain no-repeat;
   /* js/motion.js brings the logo in as each page loads: from big, blurred and unseen to
      sharp, in place and lit. */
-  opacity: var(--logo-o, 0.3);
+  opacity: calc(var(--logo-o, 0.3) * var(--logo-dim, 1));
   transform: scale(var(--logo-s, 1));
   filter: blur(calc(var(--logo-blur, 0) * 1px));
+}
+
+/* On a phone a service or town page's intro paragraph lands right on the logo's gold
+   lettering, so the logo is dimmer there to keep the words easy to read. */
+@media (max-width: 680px) {
+  .hero-page {
+    --logo-dim: 0.45;
+  }
 }
 
 /* Then a band of warm light sweeps across the logo once, cut to the logo's own shape. */
@@ -1405,38 +1413,7 @@ main .lead {
   pointer-events: none;
 }
 
-/* ----- Buttons: a glint of light sweeps across, and they glow on hover ----- */
-.button {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.button:not(.button-ghost)::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%)
-    0 0 / 250% 100% no-repeat;
-  animation: glint 4.5s ease-in-out infinite;
-}
-
-@keyframes glint {
-  0%, 60% { background-position: 150% 0; }
-  100%    { background-position: -100% 0; }
-}
-
-.button:hover {
-  box-shadow: 0 0 28px rgba(245, 179, 1, 0.45);
-}
-
-.button-ghost:hover {
-  border-color: var(--volt);
-  box-shadow: 0 0 24px rgba(245, 179, 1, 0.25);
-}
-
-/* ----- Solid buttons: polished gold, with a brighter glint every 3 seconds -----
+/* ----- Solid buttons: polished gold, with a glint of light sweeping across every 3 seconds -----
    A gold gradient with a light top edge, a soft amber glow and a faint ring, like a lit badge. */
 .button:not(.button-ghost) {
   border: 1px solid #ffd666;
@@ -1449,8 +1426,18 @@ main .lead {
 }
 
 .button:not(.button-ghost)::after {
-  background-image: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.85) 50%, transparent 70%);
-  animation-duration: 3s;
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.85) 50%, transparent 70%)
+    0 0 / 250% 100% no-repeat;
+  animation: glint 3s ease-in-out infinite;
+}
+
+@keyframes glint {
+  0%, 60% { background-position: 150% 0; }
+  100%    { background-position: -100% 0; }
 }
 
 .button:not(.button-ghost):hover {
@@ -1478,6 +1465,7 @@ main .lead {
 
 /* ----- Outline buttons (Text a photo): frosted glass with a shadow ----- */
 .button-ghost {
+  color: var(--text-on-ink);
   background-color: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -1487,6 +1475,7 @@ main .lead {
 
 .button-ghost:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--volt);
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35), 0 0 24px rgba(245, 179, 1, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
@@ -1567,6 +1556,14 @@ main .lead {
 }
 
 @media (hover: hover) {
+  .service-card:hover {
+    background-color: color-mix(in srgb, var(--card) 78%, transparent);
+  }
+
+  a.contact-card:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
   .service-card:hover,
   a.contact-card:hover {
     transform: translateY(-4px);
@@ -1580,10 +1577,6 @@ main .lead {
 }
 
 /* ----- Remodel steps: the numbers pulse one after another, like current moving down a line ----- */
-.step-number {
-  animation: charge 4s ease-in-out infinite;
-}
-
 .steps li:nth-child(2) .step-number { animation-delay: 1s; }
 .steps li:nth-child(3) .step-number { animation-delay: 2s; }
 .steps li:nth-child(4) .step-number { animation-delay: 3s; }
@@ -1594,10 +1587,6 @@ main .lead {
 }
 
 /* ----- FAQ: an open answer gets a lit edge ----- */
-.faq {
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
 .faq[open],
 .faq:hover {
   border-color: var(--volt);
@@ -1639,7 +1628,7 @@ main .lead {
 }
 
 @keyframes logo-anyway {
-  to { opacity: 0.3; }
+  to { opacity: calc(0.3 * var(--logo-dim, 1)); }
 }
 
 @keyframes show-anyway {

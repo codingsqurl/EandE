@@ -25,7 +25,8 @@ import java.util.regex.Pattern;
  * - Absurdly long addresses and requests that carry a body.
  * - Visitors asking for too many pages too fast (rate limiting).
  * - Bots probing for things this site doesn't have, like /wp-login.php or /.env.
- *   One probe and that IP address is banned for an hour.
+ *   Each probe is refused; three within ten minutes and that IP address is banned
+ *   for a quarter of an hour.
  *
  * Fly.io already only lets web traffic in (ports 80 and 443), so this covers the
  * part a network firewall can't: what's inside the requests.
@@ -53,7 +54,16 @@ final class Firewall {
     static final double RATE_BURST = 60;
     static final double RATE_PER_SECOND = 2;
 
-    static final long BAN_SECONDS = 60 * 60; // 1 hour
+    // A scanner sends dozens of probes in a few seconds, so three within ten minutes is a bot.
+    // A single stray one (a mistyped address, a link someone else planted) is only refused.
+    // The ban is short because one IP address can be a whole phone carrier's customers or a
+    // family's Wi-Fi, and one infected device shouldn't lock them all out for long.
+    static final int STRIKES_TO_BAN = 3;
+    static final double STRIKE_WINDOW_SECONDS = 10 * 60;
+    static final double BAN_SECONDS = 15 * 60;
+
+    // Shown to anyone turned away, so a real customer caught by mistake can still call.
+    static final String FORBIDDEN = "Forbidden. To reach E&E, call or text (720) 838-1503.";
 
     // The most visitors the firewall keeps track of at once. A flood from thousands of
     // addresses could otherwise fill the server's memory with rate-limit records.
@@ -67,6 +77,8 @@ final class Firewall {
 
     // Addresses only an attack bot asks for: WordPress and PHP admin pages, leaked
     // secrets and git folders, and paths that try to climb out of the site folder.
+    // Only the path is checked, never the query: ad click IDs (?gclid=...) are random
+    // letters that now and then spell "wp-", and the server never reads the query anyway.
     static final Pattern PROBE = Pattern.compile(
             "(\\.php|\\.aspx?|\\.cgi|\\.env|\\.git|\\.svn|\\.htaccess|\\.htpasswd|wp-|wordpress|phpmyadmin"
                     + "|xmlrpc|/admin|/cgi-bin|/vendor/|/actuator|\\.\\.|%2e%2e)",
@@ -79,6 +91,8 @@ final class Firewall {
     private static final Map<String, double[]> buckets = new HashMap<>();
     // Visitor IP -> when their ban ends.
     private static final Map<String, Double> banned = new HashMap<>();
+    // Visitor IP -> {probes so far, when the first one came}.
+    private static final Map<String, double[]> strikes = new HashMap<>();
     private static double nextCleanup = 0;
 
     private static Set<String> allowedHosts() {
@@ -152,6 +166,7 @@ final class Firewall {
         double full = RATE_BURST / RATE_PER_SECOND; // after this long, a visitor's bucket is full again
         buckets.values().removeIf(bucket -> now - bucket[1] > full);
         banned.values().removeIf(until -> until <= now);
+        strikes.values().removeIf(strike -> now - strike[1] > STRIKE_WINDOW_SECONDS);
         // Still too many even after tidying up means a flood from many addresses.
         // Forgetting everyone's rate-limit count is better than running out of memory.
         // Bans are kept; new ones just stop being added until old ones run out.
@@ -163,12 +178,30 @@ final class Firewall {
     /** Lifts a ban. Only the tests use it, to clean up after themselves. */
     static synchronized void unbanForTests(String ip) {
         banned.remove(visitor(ip));
+        strikes.remove(visitor(ip));
+    }
+
+    /** Counts a probe against the visitor, and bans them once they reach STRIKES_TO_BAN. */
+    private static void strike(String ip, double now) {
+        double[] strike = strikes.get(ip);
+        if (strike == null || now - strike[1] > STRIKE_WINDOW_SECONDS) {
+            if (strikes.size() >= MAX_TRACKED) {
+                return;
+            }
+            strike = new double[] {0, now};
+            strikes.put(ip, strike);
+        }
+        strike[0] += 1;
+        if (strike[0] >= STRIKES_TO_BAN && banned.size() < MAX_TRACKED) {
+            banned.put(ip, now + BAN_SECONDS);
+            strikes.remove(ip);
+        }
     }
 
     /** Returns a refusal turning the request away, or null to let it through. */
     static synchronized Refusal check(HttpExchange exchange) {
         URI uri = exchange.getRequestURI();
-        String path = uri.getPath();
+        String path = uri.getPath() == null ? "" : uri.getPath();
         if (EXEMPT_PATHS.contains(path)) {
             return null;
         }
@@ -180,25 +213,33 @@ final class Firewall {
         cleanup(now);
         String ip = visitor(clientIp(exchange));
 
-        if (banned.getOrDefault(ip, 0.0) > now) {
-            return new Refusal(403, "Forbidden");
+        Double until = banned.get(ip);
+        if (until != null && until > now) {
+            return new Refusal(403, FORBIDDEN);
         }
 
-        // Check both the address as sent and as decoded, so %-tricks can't hide a probe.
-        String query = uri.getRawQuery() == null ? "" : uri.getRawQuery();
-        String asSent = uri.getRawPath() + "?" + query;
-        if (PROBE.matcher(asSent).find() || PROBE.matcher(path).find()) {
-            if (banned.size() < MAX_TRACKED) {
-                banned.put(ip, now + BAN_SECONDS);
+        // Check both the path as sent and as decoded, so %-tricks can't hide a probe.
+        Headers headers = exchange.getRequestHeaders();
+        String rawPath = uri.getRawPath() == null ? "" : uri.getRawPath();
+        if (PROBE.matcher(rawPath).find() || PROBE.matcher(path).find()) {
+            // A browser marks requests another site's page made it send (an <img> pointing
+            // here, planted to get its reader banned). Those are refused but never counted.
+            if (!"cross-site".equals(headers.getFirst("Sec-Fetch-Site"))) {
+                strike(ip, now);
             }
-            return new Refusal(403, "Forbidden");
+            return new Refusal(403, FORBIDDEN);
+        }
+
+        // Every other request, even one about to be refused below, spends from the visitor's
+        // allowance, so nobody can send unlimited requests of any kind.
+        if (rateLimited(ip, now)) {
+            return new Refusal(429, "Too Many Requests", Map.of("Retry-After", "30"));
         }
 
         if (!ALLOWED_METHODS.contains(exchange.getRequestMethod())) {
             return new Refusal(405, "Method Not Allowed", Map.of("Allow", "GET, HEAD"));
         }
 
-        Headers headers = exchange.getRequestHeaders();
         String host = headers.getFirst("Host") == null ? "" : headers.getFirst("Host");
         int colon = host.lastIndexOf(':');
         if (colon >= 0) {
@@ -208,17 +249,14 @@ final class Firewall {
             return new Refusal(421, "Misdirected Request");
         }
 
-        if (("http://" + headers.getFirst("Host") + asSent).length() > MAX_URL_LENGTH) {
+        String query = uri.getRawQuery() == null ? "" : uri.getRawQuery();
+        if (("http://" + headers.getFirst("Host") + rawPath + "?" + query).length() > MAX_URL_LENGTH) {
             return new Refusal(414, "URI Too Long");
         }
 
         String length = headers.getFirst("Content-Length");
         if ((length != null && !length.equals("0")) || headers.containsKey("Transfer-Encoding")) {
             return new Refusal(413, "Content Too Large");
-        }
-
-        if (rateLimited(ip, now)) {
-            return new Refusal(429, "Too Many Requests", Map.of("Retry-After", "30"));
         }
 
         return null;

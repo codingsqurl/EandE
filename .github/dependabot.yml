@@ -1,0 +1,8 @@
+# GitHub opens a pull request when the Java base images in the Dockerfile get a newer
+# release (security fixes included), so the server doesn't quietly run on an old one.
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"

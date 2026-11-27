@@ -26,8 +26,10 @@ if [ "$1" = "pages" ]; then
   # so this is only a test copy. The noindex tag keeps Google from listing it next to the real site.
   rm -rf build-pages
   mkdir build-pages
-  cp 404.html style.css favicon.svg logo.webp apple-touch-icon.png og-image.png build-pages/
-  cp -R js build-pages/
+  cp style.css favicon.svg logo.webp apple-touch-icon.png og-image.png build-pages/
+  # Only the scripts the pages load, never anything else that lands in js/.
+  mkdir build-pages/js
+  cp js/gsap-3.12.5.min.js js/ScrollTrigger-3.12.5.min.js js/motion.js js/analytics.js js/nudge.js build-pages/js/
   # Like the Java server, add the stylesheet's fingerprint to its link, so phones fetch the new
   # styles after every publish instead of reusing a saved copy. GitHub Pages serves
   # electrical.html at /electrical, so the links between pages work there too.
@@ -36,7 +38,6 @@ if [ "$1" = "pages" ]; then
   analytics="$(shasum js/analytics.js | cut -c1-8)"
   nudge="$(shasum js/nudge.js | cut -c1-8)"
   for page in *.html; do
-    [ "$page" = 404.html ] && continue
     awk '{ print } /<meta charset="UTF-8">/ { print "    <meta name=\"robots\" content=\"noindex\">" }' \
       "$page" | sed -e "s|href=\"style.css\"|href=\"style.css?v=$version\"|" \
         -e "s|src=\"js/motion.js\"|src=\"js/motion.js?v=$motion\"|" \

@@ -13,3 +13,6 @@ server/test
 **/__pycache__
 .DS_Store
 art
+# Notes and local tooling: only the files the Dockerfile names reach the server anyway
+*.md
+.impeccable

@@ -62,7 +62,7 @@ final class ServerTest {
                 equal("public, max-age=31536000", reply.header("Cache-Control"));
             }
             equal("public, max-age=31536000, immutable",
-                    Client.get("/js/motion.js?v=" + Server.motionVersion()).header("Cache-Control"));
+                    Client.get("/js/motion.js?v=" + Server.scriptVersion("js/motion.js")).header("Cache-Control"));
             equal("public, max-age=600", Client.get("/js/motion.js").header("Cache-Control"));
             equal("text/javascript; charset=utf-8", Client.get("/js/motion.js").header("Content-Type"));
             equal(404, Client.get("/js/other.js").status());
@@ -291,6 +291,35 @@ final class ServerTest {
 
         test("a different ETag gets the full page", () -> {
             equal(200, Client.get("/", "If-None-Match: \"stale\"").status());
+        });
+
+        test("a 304 still says the page varies by compression", () -> {
+            String etag = Client.get("/").header("ETag");
+            equal("Accept-Encoding", Client.get("/", "If-None-Match: " + etag).header("Vary"));
+        });
+
+        test("an ETag a proxy weakened or listed with others still gets 304", () -> {
+            String etag = Client.get("/").header("ETag");
+            String bare = etag.substring(2); // the server's tags are weak: W/"..."
+            equal(304, Client.get("/", "If-None-Match: " + bare).status());
+            equal(304, Client.get("/", "If-None-Match: \"other\", " + etag).status());
+            equal(304, Client.get("/", "If-None-Match: *").status());
+        });
+
+        test("Q=0 in capitals still means no", () -> {
+            isTrue(!Server.accepts("br;Q=0, gzip", "br"), "br refused");
+            isTrue(Server.accepts("br;Q=0, gzip", "gzip"), "gzip allowed");
+        });
+
+        test("the server refuses to start if a site file is missing", () -> {
+            Server.checkSiteFiles(); // all present: no complaint
+            boolean threw = false;
+            try {
+                Server.read(Server.SITE.resolve("no-such-file.css"));
+            } catch (IllegalStateException expected) {
+                threw = expected.getMessage().contains("no-such-file.css");
+            }
+            isTrue(threw, "a missing file is named in the error");
         });
 
         test("HEAD gets the headers and length but no body", () -> {

@@ -4,17 +4,19 @@
   The page is complete without this file: every part is visible in the HTML and CSS alone,
   so if a script fails to load, nothing stays hidden. What it adds:
 
-  - Home page: the logo behind the hero lights up and the five service tiles arrive one by
-    one. As each lands, its icon does its trade: the bolt zaps, the wrench turns, the tree
-    sways, the concrete settles, the house hops.
+  - Every page: the header's contents drop in, and the hero's logo sharpens into place with
+    a sweep of light.
+  - Home page: the five service tiles arrive one by one. As each lands, its icon acts out its
+    trade: the bolt strikes from the ground up, the wrench tightens a nut, the tree is taken
+    down and grows back, the concrete wall is built block by block, the house goes up.
   - Everywhere: hovering or tabbing to a service (in the tiles or the menu) plays its icon
     again. The menu's items drop in when it opens. FAQ answers slide open and shut.
     Groups of cards and towns rise into place as they scroll into view.
   - Phones: the Call / Text bar slides up once the top of the page has scrolled away.
 
   People who've asked their device for less motion get none of this: things simply appear
-  and change state at once, the icons hold still and the call bar stays put. Headings and paragraphs are never animated
-  letter by letter; text at most fades in with its section.
+  and change state at once, the icons hold still and the call bar stays put. Headings and
+  paragraphs are never animated letter by letter; text at most fades in with its section.
 */
 (function () {
   "use strict";

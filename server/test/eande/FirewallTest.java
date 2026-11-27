@@ -53,23 +53,49 @@ final class FirewallTest {
 
         test("probes for things this site doesn't have are refused with 403", () -> {
             for (String probe : new String[] {"/wp-login.php", "/.env", "/.git/config", "/admin",
-                    "/phpmyadmin/", "/cgi-bin/test", "/x?file=../../etc/passwd", "/%2e%2e/etc/passwd",
-                    "/%2Eenv", "/WP-ADMIN/"}) {
-                equal(403, Client.get(probe).status());
+                    "/phpmyadmin/", "/cgi-bin/test", "/%2e%2e/etc/passwd", "/%2Eenv", "/WP-ADMIN/"}) {
+                Client.Reply reply = Client.get(probe);
+                equal(403, reply.status());
+                isTrue(reply.text().contains("(720) 838-1503"), "the refusal gives the phone number");
             }
         });
 
-        test("one probe bans that visitor from the whole site", () -> {
+        test("one stray probe is refused but doesn't ban the visitor", () -> {
+            String visitor = Client.freshIp();
+            equal(403, Client.send("GET", "/wp-login.php", visitor).status());
+            equal(200, Client.send("GET", "/", visitor).status());
+        });
+
+        test("three probes ban that visitor from the whole site", () -> {
             String bot = Client.freshIp();
             equal(403, Client.send("GET", "/.env", bot).status());
+            equal(403, Client.send("GET", "/.git/config", bot).status());
+            equal(403, Client.send("GET", "/wp-login.php", bot).status());
             equal(403, Client.send("GET", "/", bot).status());
             equal(403, Client.send("GET", "/style.css", bot).status());
         });
 
+        test("probes another site's page makes a browser send never count toward a ban", () -> {
+            String reader = Client.freshIp();
+            for (int i = 0; i < 5; i++) {
+                equal(403, Client.send("GET", "/wp-login.php", reader, "Sec-Fetch-Site: cross-site").status());
+            }
+            equal(200, Client.send("GET", "/", reader).status());
+        });
+
         test("a ban doesn't touch anyone else", () -> {
             String bot = Client.freshIp();
-            equal(403, Client.send("GET", "/wp-login.php", bot).status());
+            for (int i = 0; i < 3; i++) {
+                Client.send("GET", "/wp-login.php", bot);
+            }
+            equal(403, Client.send("GET", "/", bot).status());
             equal(200, Client.get("/").status());
+        });
+
+        test("the query is never treated as a probe, so ad click IDs get through", () -> {
+            equal(200, Client.get("/?gclid=Cj0KCQiAwp-wrPx3_5Bh").status());
+            equal(200, Client.get("/?utm_campaign=wp-ads&ref=/admin").status());
+            equal(200, Client.get("/?x=../../etc/passwd").status());
         });
 
         test("ordinary addresses that only look a bit like probes are let through", () -> {
@@ -101,7 +127,9 @@ final class FirewallTest {
 
         test("the visitor is identified by Fly's header, which Fly sets itself", () -> {
             String ip = Client.freshIp();
-            equal(403, Client.send("GET", "/xmlrpc.php", ip).status());
+            for (int i = 0; i < 3; i++) {
+                Client.send("GET", "/xmlrpc.php", ip);
+            }
             equal(403, Client.send("GET", "/", ip).status());
             // The same machine without Fly's header is a different visitor.
             equal(200, Client.send("GET", "/", null).status());
@@ -113,7 +141,9 @@ final class FirewallTest {
                 // The tests all come from 127.0.0.1, so ban a made-up address and check
                 // that claiming it does nothing: the visitor is still 127.0.0.1.
                 equal(200, Client.send("GET", "/", "203.0.113.50").status());
-                Client.send("GET", "/.env", "203.0.113.51"); // bans 127.0.0.1 itself
+                for (int i = 0; i < 3; i++) {
+                    Client.send("GET", "/.env", "203.0.113.51" + i); // bans 127.0.0.1 itself
+                }
                 equal(403, Client.send("GET", "/", "203.0.113.52").status());
             } finally {
                 Firewall.trustFlyHeader = true;
@@ -124,8 +154,10 @@ final class FirewallTest {
         test("IPv6 visitors count by their whole block, so new addresses don't dodge a ban", () -> {
             equal(Firewall.visitor("2001:db8:1:2::1"), Firewall.visitor("2001:db8:1:2:ffff:abcd:1:9"));
             isTrue(!Firewall.visitor("2001:db8:1:2::1").equals(Firewall.visitor("2001:db8:1:3::1")), "different blocks");
-            equal(403, Client.send("GET", "/wp-login.php", "2001:db8:aa:1::1").status());
-            equal(403, Client.send("GET", "/", "2001:db8:aa:1::2").status());
+            for (int i = 1; i <= 3; i++) {
+                equal(403, Client.send("GET", "/wp-login.php", "2001:db8:aa:1::" + i).status());
+            }
+            equal(403, Client.send("GET", "/", "2001:db8:aa:1::9").status());
             equal(200, Client.send("GET", "/", "2001:db8:aa:2::1").status());
         });
 

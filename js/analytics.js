@@ -119,6 +119,12 @@
       startAnalytics();
     } else {
       stopAnalytics();
+      if (loaded) {
+        // Google's tag was already running on this page. Telling it "denied" isn't the same
+        // as it never having loaded, so load the page again without it.
+        window.location.reload();
+        return;
+      }
     }
     hideBanner();
   }

@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.zip.GZIPOutputStream;
 
@@ -31,7 +32,7 @@ import java.util.zip.GZIPOutputStream;
  *
  *     ./run.sh
  *
- * then open http://127.0.0.1:8000
+ * then open http://127.0.0.1:8001
  */
 public final class Server {
     private Server() {}
@@ -71,13 +72,14 @@ public final class Server {
         return pages;
     }
 
-    // Only these files are ever served. Everything else in the repo (README, notes,
-    // the server's own code) stays private, even if someone guesses its name.
-    // The number is how many seconds a browser may keep its copy.
     // GSAP, which runs the motion (js/motion.js), as downloaded from npm.
     static final String GSAP = "js/gsap-3.12.5.min.js";
     static final String SCROLL_TRIGGER = "js/ScrollTrigger-3.12.5.min.js";
 
+    // Only these files are ever served, besides the pages, the stylesheet and the site's own
+    // scripts. Everything else in the repo (README, notes, the server's own code) stays
+    // private, even if someone guesses its name. The number is how many seconds a browser
+    // may keep its copy.
     static final Map<String, Integer> PUBLIC_FILES = Map.of(
             "favicon.svg", 60 * 60 * 24,    // 1 day
             "logo.webp", 60 * 60 * 24,
@@ -158,16 +160,13 @@ public final class Server {
     // browsers can keep it for a year. When the file changes, so does the address.
     static final Path STYLE_CSS = SITE.resolve("style.css");
     static String styleVersion() {
-        return sha256(read(STYLE_CSS)).substring(0, 8);
+        return file(STYLE_CSS).hash().substring(0, 8);
     }
 
     // The site's own scripts work the same way: js/motion.js?v=1a2b3c4d.
     static final List<String> OWN_SCRIPTS = List.of("js/motion.js", "js/analytics.js", "js/nudge.js");
     static String scriptVersion(String file) {
-        return sha256(read(SITE.resolve(file))).substring(0, 8);
-    }
-    static String motionVersion() {
-        return scriptVersion("js/motion.js");
+        return file(SITE.resolve(file)).hash().substring(0, 8);
     }
 
     // With -Deande.quiet=true the server doesn't log each request, so test output stays readable.
@@ -189,6 +188,7 @@ public final class Server {
 
     /** Starts the server. Port 0 picks any free port, which the tests use. */
     static HttpServer start(String host, int port) throws IOException {
+        checkSiteFiles();
         limitSlowConnections();
         HttpServer server = HttpServer.create(new InetSocketAddress(host, port), 0);
         server.createContext("/", Server::handle);
@@ -196,6 +196,23 @@ public final class Server {
         server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         server.start();
         return server;
+    }
+
+    /**
+     * Refuses to start if a file the site needs is missing (or SITE_DIR points at the wrong
+     * folder). Otherwise the server would start, pass Fly's health check, and answer every
+     * page with an error.
+     */
+    static void checkSiteFiles() {
+        List<Path> needed = new ArrayList<>();
+        PAGES.values().forEach(page -> needed.add(SITE.resolve(page)));
+        OWN_SCRIPTS.forEach(script -> needed.add(SITE.resolve(script)));
+        PUBLIC_FILES.keySet().forEach(name -> needed.add(SITE.resolve(name)));
+        needed.add(STYLE_CSS);
+        needed.add(SITE.resolve("404.html"));
+        for (Path path : needed) {
+            read(path); // throws, naming the file, if it can't be read
+        }
     }
 
     /**
@@ -229,9 +246,10 @@ public final class Server {
                 status = route(exchange);
             }
         } catch (Exception error) {
-            System.err.println("error handling " + exchange.getRequestURI() + ": " + error);
+            System.err.println("error handling " + exchange.getRequestURI().getRawPath() + ": " + error);
             try {
-                send(exchange, 500, plain("Internal Server Error"), CONTENT_TYPES.get("txt"), Map.of());
+                send(exchange, 500, plain("Internal Server Error"), CONTENT_TYPES.get("txt"),
+                        Map.of("Cache-Control", "no-store"));
             } catch (IOException ignored) {
                 // The visitor has already gone.
             }
@@ -248,6 +266,9 @@ public final class Server {
     static int route(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
         String method = exchange.getRequestMethod();
+        if (path == null || !path.startsWith("/")) {
+            path = "/404"; // an odd request target ("*", "mailto:x"): just not found
+        }
 
         if (path.equals("/healthz")) {
             // Fly.io calls this to check the server is up. It skips the firewall, so check the method here.
@@ -319,7 +340,8 @@ public final class Server {
 
     // ---------- Visitor counts ----------
     // Cloudflare Web Analytics counts visits, pages and where visitors came from without
-    // cookies or tracking a person, so the site needs no cookie banner. It's off unless
+    // cookies or tracking a person, so it needs no consent (Google Analytics, in
+    // js/analytics.js, is the one behind the cookie banner). It's off unless
     // ANALYTICS_TOKEN holds the site's token from the Cloudflare dashboard. When it's on,
     // each page gets Cloudflare's one script, and the safety rules allow only that script
     // and the address it reports to. The token shows in every page, so it isn't a secret.
@@ -367,8 +389,14 @@ public final class Server {
         for (String file : PAGES.values()) {
             bodies.add(pageText(file).getBytes(StandardCharsets.UTF_8));
         }
-        for (String file : new String[] {"style.css", "404.html", "favicon.svg", "robots.txt", "sitemap.xml",
-                "js/motion.js", "js/analytics.js", "js/nudge.js", GSAP, SCROLL_TRIGGER}) {
+        List<String> files = new ArrayList<>(List.of("style.css", "404.html"));
+        files.addAll(OWN_SCRIPTS);
+        for (String name : PUBLIC_FILES.keySet()) {
+            if (isText(contentType(name))) {
+                files.add(name);
+            }
+        }
+        for (String file : files) {
             bodies.add(read(SITE.resolve(file)));
         }
         for (byte[] body : bodies) {
@@ -380,12 +408,17 @@ public final class Server {
 
     static int page(HttpExchange exchange, String file) throws IOException {
         byte[] page = pageText(file).getBytes(StandardCharsets.UTF_8);
-        String etag = "\"" + sha256(page).substring(0, 16) + "\"";
+        // Weak (W/), because the same page goes out squashed different ways, and a strong tag
+        // would promise byte-for-byte identical copies.
+        String etag = "W/\"" + sha256(page).substring(0, 16) + "\"";
         // "no-cache" means the browser keeps a copy but checks with us before using it.
         // If nothing changed, we answer "304 Not Modified" and it reuses its copy.
-        Map<String, String> headers = new LinkedHashMap<>(Map.of("Cache-Control", "no-cache", "ETag", etag));
+        Map<String, String> headers = new LinkedHashMap<>();
+        headers.put("Cache-Control", "no-cache");
+        headers.put("ETag", etag);
+        headers.put("Vary", "Accept-Encoding");
         headers.put("Content-Security-Policy", pageCsp(file));
-        if (etag.equals(exchange.getRequestHeaders().getFirst("If-None-Match"))) {
+        if (matches(exchange.getRequestHeaders().getFirst("If-None-Match"), etag)) {
             send(exchange, 304, null, null, headers);
             return 304;
         }
@@ -415,9 +448,7 @@ public final class Server {
             return;
         }
 
-        boolean text = contentType != null && (contentType.startsWith("text/") || contentType.startsWith("image/svg")
-                || contentType.startsWith("application/xml"));
-        if (text) {
+        if (isText(contentType)) {
             headers.set("Vary", "Accept-Encoding");
             String accepts = exchange.getRequestHeaders().getFirst("Accept-Encoding");
             if (body.length >= GZIP_MIN_SIZE) {
@@ -446,6 +477,30 @@ public final class Server {
 
     // ---------- Small helpers ----------
 
+    /** Whether a type is text, which squashes well. */
+    static boolean isText(String contentType) {
+        return contentType != null && (contentType.startsWith("text/") || contentType.startsWith("image/svg")
+                || contentType.startsWith("application/xml"));
+    }
+
+    /**
+     * Whether an If-None-Match header names this ETag. Browsers send the tag back as given,
+     * but proxies may weaken it (W/) or send a list, and "*" matches anything.
+     */
+    static boolean matches(String ifNoneMatch, String etag) {
+        if (ifNoneMatch == null) {
+            return false;
+        }
+        String bare = etag.startsWith("W/") ? etag.substring(2) : etag;
+        for (String tag : ifNoneMatch.split(",")) {
+            tag = tag.strip();
+            if (tag.equals("*") || (tag.startsWith("W/") ? tag.substring(2) : tag).equals(bare)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static byte[] plain(String text) {
         return text.getBytes(StandardCharsets.UTF_8);
     }
@@ -464,7 +519,7 @@ public final class Server {
         for (String part : header.split(",")) {
             String[] pieces = part.split(";");
             if (pieces[0].trim().equalsIgnoreCase(coding)) {
-                return pieces.length == 1 || !pieces[1].replace(" ", "").matches("q=0(\\.0*)?");
+                return pieces.length == 1 || !pieces[1].replace(" ", "").matches("(?i)q=0(\\.0*)?");
             }
         }
         return false;
@@ -489,8 +544,31 @@ public final class Server {
     }
 
     static byte[] read(Path path) {
+        return file(path).bytes();
+    }
+
+    /** A file's contents and fingerprint, as of when it was last changed. */
+    record Cached(long modified, long size, byte[] bytes, String hash) {}
+
+    private static final Map<Path, Cached> FILES = new ConcurrentHashMap<>();
+
+    /**
+     * A file's contents and fingerprint. Each is read and fingerprinted once, then kept until
+     * the file changes, so a page visit doesn't re-read and re-hash the stylesheet and scripts.
+     * (Edits while the server runs still show up at once, which helps when working locally.)
+     */
+    static Cached file(Path path) {
         try {
-            return Files.readAllBytes(path);
+            long modified = Files.getLastModifiedTime(path).toMillis();
+            long size = Files.size(path);
+            Cached known = FILES.get(path);
+            if (known != null && known.modified() == modified && known.size() == size) {
+                return known;
+            }
+            byte[] bytes = Files.readAllBytes(path);
+            Cached fresh = new Cached(modified, size, bytes, sha256(bytes));
+            FILES.put(path, fresh);
+            return fresh;
         } catch (IOException error) {
             throw new IllegalStateException("couldn't read " + path, error);
         }
